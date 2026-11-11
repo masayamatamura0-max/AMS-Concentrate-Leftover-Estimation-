@@ -2,13 +2,10 @@
 
 **Research methods and a downloadable Windows application for estimating concentrate leftovers in automated milking system (AMS) feed bowls from images and short video clips.**
 
-> **Project status:** This repository accompanies *Estimation of automated milking system concentrate leftovers with 2-dimensional images and machine learning* (Thomas et al.; manuscript in preparation). Described research settings should be checked against the final manuscript before publication.
-
-**Repository scope:** This GitHub repository contains **Materials and Methods documentation** and a **user guide for the Windows GUI**. It does **not** include Python source code, Jupyter notebooks, model-training scripts, or the complete experimental dataset. The compiled Windows application and its trained inference models are distributed through **GitHub Releases**.
-
 ## Download the Windows GUI application
 
 **[Download the latest AMS Leftover Estimator (Windows)](../../releases/latest)**
+<img width="1917" height="1020" alt="github" src="https://github.com/user-attachments/assets/d213e842-8f45-46c3-9998-fdf46cdadb9f" />
 
 Open the release and download **`AMS-Leftover-Estimator-app.zip`** under **Assets**. Do not select GitHub's automatically generated *Source code (zip)* archive, which does not contain the executable.
 
@@ -87,7 +84,7 @@ The final exclusion criteria and performance statistics should be reported from 
 
 ### Research procedure versus the distributed GUI
 
-The original research records describe frame-sampling options around **0.05–0.20 s** and may have included additional rotated detection candidates; the exact settings used for the final scientific results require confirmation. By contrast, the **distributed GUI** defaults to **1.00-s** frame sampling and **does not perform 180° rotation**. These are operational defaults intended to improve processing speed, and should **not** be assumed equivalent to the validated research protocol without comparison.
+The original research records describe frame-sampling options around **0.05–0.20 s** and may have included additional rotated detection candidates; the exact settings used for the final scientific results require confirmation. By contrast, the **distributed GUI** defaults to **1.00-s** frame sampling. These are operational defaults intended to improve processing speed, and should **not** be assumed equivalent to the validated research protocol without comparison.
 
 ## Repository contents
 
