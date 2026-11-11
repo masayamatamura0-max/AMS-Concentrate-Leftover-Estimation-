@@ -27,24 +27,20 @@ This preprocessing is used for validation and inference without random augmentat
 
 ### Training-only augmentation
 
-The October development notebook documents:
+The internal model-development records describe:
 
 - Random horizontal flip, probability **0.5**;
 - Small random rotation, approximately **±10°**;
 - Brightness, contrast, and saturation jitter of **0.2** each;
 - Hue jitter of **0.03**.
 
-The final exact transform order should be confirmed from the executable training notebook. **Training-only random rotations do not mean that the present GUI rotates video frames.** The current application performs no artificial 180° rotation during detection.
+The final exact transform order should be confirmed from the finalized analysis records. **Training-only random rotations do not mean that the present GUI rotates video frames.** The current application performs no artificial 180° rotation during detection.
 
 ## CNN architecture
 
 The documented architecture is **EfficientNet V2-S** using `torchvision.models.efficientnet_v2_s`, initialized from **ImageNet-1K pretrained weights** during model development. Its terminal classifier is replaced with a **single-output linear layer** for regression:
 
-```python
-# Conceptual model definition; not a stand-alone training script.
-model = efficientnet_v2_s(weights=EfficientNet_V2_S_Weights.IMAGENET1K_V1)
-model.classifier[1] = torch.nn.Linear(model.classifier[1].in_features, 1)
-```
+**Architecture summary:** EfficientNet V2-S with its final classification head replaced by a **single-output regression layer**. This is a methodological description; training code is not provided.
 
 The inference application reconstructs the matching architecture and loads the authorized saved checkpoint without needing to download pretrained weights. A checkpoint produced with another output head or network variant may not load.
 
@@ -58,7 +54,7 @@ $$
 
 The model was trained with **mean squared error on this log-transformed target**, not MSE on grams.
 
-| Hyperparameter | Value described in October notebook |
+| Hyperparameter | Value described in internal study records |
 | --- | --- |
 | Optimizer | AdamW |
 | Learning rate | **5 × 10⁻⁵** |
@@ -91,4 +87,4 @@ Report errors using back-transformed predictions in **grams**; see [Model evalua
 
 ## Implementation and reproducibility boundary
 
-Once the user adds the GUI code, `gui/inference.py` provides the image transform, checkpoint loading, and gram-scale prediction, while `gui/app.py` manages input selection and display. This repository's documentation alone does **not** include the original complete EfficientNet training pipeline, its manifests, or the full training-data manifests; it cannot establish bit-for-bit training reproducibility. The distributed Windows release ZIP does include trained inference checkpoints in its `Model/` folder.
+The compiled Windows GUI and both trained `.pth` checkpoints are provided through [GitHub Releases](../../../releases/latest) for **inference**. **Python source files, model-training scripts, Jupyter notebooks, and the full original training dataset are not posted in this GitHub repository.** The descriptions above summarize the documented method but are not a complete executable training workflow.

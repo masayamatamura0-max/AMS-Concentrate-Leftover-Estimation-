@@ -15,17 +15,17 @@ COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml
 MODEL.ROI_HEADS.NUM_CLASSES = 1
 ```
 
-The checkpoint was trained for the target feeder. The original annotation dataset, detector-training hyperparameters, and final stand-alone detector accuracy are **not included** in this repository; do not infer or invent those details from the inference code. A custom checkpoint needs the corresponding network configuration.
+The checkpoint was trained for the target feeder. The original annotation dataset, detector-training hyperparameters, and final stand-alone detector accuracy are **not included** in this repository; do not infer or invent those details from the downloadable application. A custom checkpoint needs the corresponding network configuration.
 
 ### Candidate generation versus acceptance
 
-The documented research notebook can use an internal Detectron2 test-score threshold as low as `SCORE_THRESH_TEST = 0.30` to retrieve candidates. That **candidate-generation threshold** is separate from the final criterion used to accept the best bowl crop. The reported **minimum accepted detection confidence is 0.90**.
+The internal research records describe an internal Detectron2 test-score threshold as low as `SCORE_THRESH_TEST = 0.30` to retrieve candidates. That **candidate-generation threshold** is separate from the final criterion used to accept the best bowl crop. The reported **minimum accepted detection confidence is 0.90**.
 
 For a frame with multiple predictions, consider only candidate instances permitted by the chosen threshold, then rank by their detector confidence score. These scores reflect the detector's classification confidence and are **not calibrated uncertainty estimates for feed mass**.
 
 ## Sampling and selection from a clip
 
-The research workflow decodes short clips using OpenCV and examines selected frames, optionally using transformed orientations in the research notebook. The general best-crop procedure is:
+The research workflow decodes short clips using OpenCV and examines selected frames, optionally using transformed orientations in the research workflow. The general best-crop procedure is:
 
 1. Sample frames at the research-run frame interval.
 2. Apply the trained Mask R-CNN detector to each considered frame/orientation.
@@ -35,11 +35,11 @@ The research workflow decodes short clips using OpenCV and examines selected fra
 
 Although Mask R-CNN predicts instance-segmentation masks, **the input for EfficientNet is a rectangular bounding-box crop**. The mask is **not** applied to remove all pixels outside the bowl. This distinction matters because visible surroundings may remain in the crop.
 
-## Important distinction: archived notebook versus current GUI
+## Research processing versus current GUI
 
-The archived October research notebook does not identify one unambiguous sampling configuration across all cells and helper functions:
+The original internal research records describe more than one sampling configuration. Because the executed research files are not provided here, the exact settings used for the reported scientific evaluation need confirmation:
 
-| Implementation detail | Archived research notebook | Current Windows GUI |
+| Implementation detail | Internal research records | Current Windows GUI |
 | --- | --- | --- |
 | Sampling interval | `0.05 s` in one constant; `0.20 s` in helper defaults/diagnostics; confirm executed call | **1.00 s** by default, adjustable |
 | Artificial 180° frame rotation | May be enabled in the research workflow | **Not performed** |
@@ -64,6 +64,6 @@ Low detector confidence, visual obstruction, unusual light, an incomplete bowl, 
 
 A methods report should include the detector architecture, training annotation source (once verified), test configuration, candidate and acceptance thresholds, exact frame-sampling interval, rotation setting, bounding-box convention, and quality-control procedure.
 
-## Related files
+## Availability of the implementation
 
-When the GUI source is added to the repository, `gui/detection.py` will contain detector inference and `gui/app.py` will contain frame selection, overlay drawing, and cropping. Those **application files are supplied separately** from this documentation package.
+This repository provides a written description of the detection method and a downloadable compiled GUI. **Detector-training scripts, Python inference source files, and research notebooks are not hosted here.** The trained detector checkpoint is provided in the Windows release for inference.

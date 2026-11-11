@@ -20,7 +20,7 @@ These are documented counts, not figures independently recalculated from raw ima
 
 ### Development and internal validation
 
-The final October training notebook is described as using an 80:20 split:
+The internal model-development records describe an 80:20 split:
 
 | Partition | Images | Function |
 | --- | ---: | --- |
@@ -38,7 +38,7 @@ The naturally occurring test observations are a useful independent observation s
 
 ## Video timing and short-clip preparation
 
-The archived October notebook associates on-site camera recordings with observation timestamps. Two timestamp alignment routes are documented:
+The internal study records associate on-site camera recordings with observation timestamps. Two timestamp alignment routes are documented:
 
 | Timestamp used to find the event | Seconds before event | Seconds after event | Intended segment |
 | --- | ---: | ---: | --- |
@@ -47,7 +47,7 @@ The archived October notebook associates on-site camera recordings with observat
 
 **Important distinction:** iPhone metadata may help locate the correct segment of the **on-site video**. This is not evidence that iPhone camera frames were part of the final on-site imaging dataset.
 
-Some comments and labels in the archived notebook still refer to 5-second clips, while active extraction constants define 4-second windows. Existing clips might have been reused without regeneration. Therefore, the final executed extraction calls, resulting video durations, timestamp time zones, and source provenance require verification before documenting one uniform video-extraction protocol.
+Some historical records refer to 5-second clips, whereas other recorded extraction settings define 4-second windows. Existing clips might have been reused without regeneration. Therefore, the final executed extraction calls, resulting video durations, timestamp time zones, and source provenance require verification before documenting one uniform video-extraction protocol.
 
 The intended workflow is:
 
@@ -71,7 +71,7 @@ The Windows GUI reads an already prepared image or video and predicts leftover w
 
 - Confirm the final controlled-weight image counts and whether multiple images correspond to a shared observation.
 - Document the two independent-test exclusions (92 initially, 90 analyzed) and recalculate the final reference-weight distribution.
-- Reconcile notebook comments, configured clip windows, and actual saved clip lengths.
+- Reconcile internal records of clip windows and actual saved clip lengths.
 - Identify the precise timestamp-alignment rule used for each observation.
 - Document camera positioning and acquisition conditions from original laboratory records.
 - Keep test observations excluded from parameter tuning, early stopping, and checkpoint selection.

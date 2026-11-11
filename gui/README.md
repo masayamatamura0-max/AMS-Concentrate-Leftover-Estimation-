@@ -2,7 +2,7 @@
 
 [Back to repository homepage](../README.md) · [Scientific methods](../Materials_and_Methods/00_study_design_and_data.md)
 
-This page is the **user manual** for the Windows application. It describes inference with **trained checkpoints**. The GUI source files (`app.py`, `detection.py`, `inference.py`, `model_paths.py`, and `requirements.txt`) are added and maintained separately from this documentation package.
+This page is the **user manual** for the downloadable Windows application. It describes inference using **trained checkpoints**. **Python source code and Jupyter notebooks are not included in this repository.** The compiled application and trained checkpoints are available from GitHub Releases.
 
 ## 1. What the application does
 
@@ -13,11 +13,11 @@ The app estimates the mass of concentrate remaining in an AMS feed bowl from an 
 
 An already cropped still image does not need object detection. The current GUI is an **inference** application; it cannot train or fine-tune either model.
 
-## 2. Obtain or build the Windows application
+## 2. Download and launch the Windows application
 
-**Recommended distribution:** Download the [latest Windows release](../../releases/latest) and select `AMS-Leftover-Estimator-app.zip` under **Assets**. The release uses a PyInstaller `onedir` layout, avoiding unpacking a large one-file EXE at every launch. The GitHub Actions build can still be used if you need to rebuild the software.
+**Download:** Open the [latest Windows release](../../../releases/latest) and select `AMS-Leftover-Estimator-app.zip` under **Assets**. The distribution uses an `onedir` layout, avoiding unpacking a large one-file EXE at every launch. Building the executable from source is **not supported by the documentation in this repository**, because the source code is not published here.
 
-1. Open the [latest release](../../releases/latest) and download `AMS-Leftover-Estimator-app.zip` from **Assets**.
+1. Open the [latest release](../../../releases/latest) and download `AMS-Leftover-Estimator-app.zip` from **Assets**.
 2. Extract the entire ZIP to a local folder.
 3. Run `AMS-Leftover-Estimator.exe`. **Do not delete or move `_internal/` or `Model/` separately.**
 4. Open one of the example files in `data/`, or select another compatible image or video. The included example files are **only a subset**, not the complete research dataset.
@@ -69,7 +69,7 @@ The GUI begins in **Crop or Clip** mode.
 | **Crop or Clip** | Short video | Detectron2 + EfficientNet | Sample frames → best-confidence crop → one regression |
 | **Full image** | Uncropped still image | Detectron2 + EfficientNet | Detect bowl → crop → regress |
 
-**Current input extensions** are `.jpg`, `.jpeg`, `.png`, `.bmp`, `.tif`, `.tiff`, `.webp` for images and `.mp4`, `.avi`, `.mov`, `.mkv`, `.m4v` for videos. Available video codecs depend on the OpenCV runtime. Videos are only valid in **Crop or Clip** mode.
+**Supported input extensions** are `.jpg`, `.jpeg`, `.png`, `.bmp`, `.tif`, `.tiff`, `.webp` for images and `.mp4`, `.avi`, `.mov`, `.mkv`, `.m4v` for videos. Available video codecs depend on the OpenCV runtime. Videos are only valid in **Crop or Clip** mode.
 
 ### Open a file and predict
 
@@ -86,14 +86,14 @@ The first prediction can be slower than subsequent ones because the models load 
 For video clips, the current GUI:
 
 - Samples at **1.00-s intervals by default**.
-- Uses frames in their **original orientation**
+- Uses frames in their **original orientation**; it does **not** add 180° rotated versions.
 - Runs Detectron2 **once on each sampled frame**.
 - Chooses the crop with the **highest accepted detector confidence** (default confidence threshold **0.90**).
 - Applies EfficientNet **once** to that selected crop.
 
 A 4-second, 20-fps video typically yields sampled frames at approximately **0, 1, 2, and 3 seconds**. Changing the interval changes the number of detector candidates. The GUI does **not** average EfficientNet predictions over the clip.
 
-**Scientific caution:** The archived research notebook includes other frame-sampling intervals and potentially rotated detector candidates. The GUI's faster default is not automatically equivalent to the experimental pipeline used to evaluate scientific performance.
+**Scientific caution:** The original study records include other frame-sampling intervals and potentially rotated detector candidates. Those research files are not included here. The GUI's faster default is not automatically equivalent to the experimental pipeline used to evaluate scientific performance.
 
 ## 6. View and save predictions
 
@@ -134,24 +134,14 @@ If a threshold or sampling interval is changed, press **Detect / Predict** to re
 
 A detection failure should be reported as a failure, **not** as 0 g of feed.
 
-## 9. Run from Python (developers)
-
-After manually adding the GUI source files and installing a compatible PyTorch, Torchvision, Detectron2, Pillow, NumPy, and OpenCV environment, the application can be launched from the repository root:
-
-```bash
-python gui/app.py
-```
-
-The `gui/requirements.txt` file may not fully capture compiled Detectron2/PyTorch compatibility; consult the maintained Windows build workflow for the exact packaging environment. These documentation files alone cannot build an EXE.
-
-## 10. Research-method differences
+## 9. Research-method differences
 
 A useful distinction for collaborators is:
 
 | Scientific workflow | Deployed GUI |
 | --- | --- |
-| Notebook frame sampling needs execution audit (`0.05` and `0.20` documented) | **1.00 s** default |
-| Notebook may consider rotated detector candidates | **Original orientation only** |
+| Internal research records contain `0.05 s` and `0.20 s` sampling options (final executed interval requires verification) | **1.00 s** default |
+| Research records may include rotated detector candidates | **Original orientation only** |
 | Controlled-weight training data, hyperparameter optimization | **Inference only** |
 | Internal validation and separate natural-leftover evaluation | **Individual-file predictions** |
 

@@ -42,7 +42,7 @@ The development range is **0–1,000 g**. An earlier project summary described r
 
 ## Outlier and high-weight sensitivity analyses
 
-The archived analysis documentation identifies **different high-weight filtering rules** in different research functions: for example, one excluded observations with reference weight **≥ 800 g**, and another excluded **≥ 1,000 g**. **Do not infer that either historical threshold explains the two exclusions from the final 90-observation analysis.** Confirm the actual selection rule and excluded observations from the final data manifest.
+The internal analysis records describe **different high-weight filtering rules** in different research functions: for example, one excluded observations with reference weight **≥ 800 g**, and another excluded **≥ 1,000 g**. **Do not infer that either historical threshold explains the two exclusions from the final 90-observation analysis.** Confirm the actual selection rule and excluded observations from the final data manifest.
 
 A transparent reporting approach is:
 
@@ -58,11 +58,11 @@ These steps improve transparency and avoid changing thresholds post hoc to maxim
 
 The two stages of the pipeline have different failure modes. Detection confidence is not the same as measurement uncertainty or regression quality. If no bowl is detected, the output should be recorded as **missing/failed**, not 0 g. Document the proportion of observations for which a valid crop is obtained, because reporting regression errors only on successfully processed observations can hide failures of the overall pipeline.
 
-The GUI defaults to **1.00-s clip sampling** without 180° rotations, whereas the research notebook describes other candidate-selection settings. GUI speed improvements do not prove equivalent model accuracy; compare them on the same held-out observations before claiming equivalence.
+The GUI defaults to **1.00-s clip sampling** without 180° rotations, whereas internal research records describe other candidate-selection settings. GUI speed improvements do not prove equivalent model accuracy; compare them on the same held-out observations before claiming equivalence.
 
 ## What this repository can and cannot establish
 
-The documentation summarizes the described evaluation design, but it contains **no raw reference weights, predicted masses, original result tables, or final executed evaluation notebook**. Consequently, no RMSE, R², MAE, or statistical significance values are invented in this repository. Add verified result tables only after reconciling manuscript values and evaluation code.
+The documentation summarizes the described evaluation design, but it contains **no raw reference weights, predicted masses, original result tables, executable scripts, or final evaluation notebooks**. Consequently, no RMSE, R², MAE, or statistical significance values are invented in this repository. Add verified result tables only after reconciling manuscript values and the finalized analysis.
 
 ## Reporting checklist
 

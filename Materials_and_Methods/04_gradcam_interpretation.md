@@ -8,10 +8,10 @@ Gradient-weighted Class Activation Mapping (**Grad-CAM**) was used in the archiv
 
 ## Conceptual procedure
 
-The documented October notebook adapts Grad-CAM to a **single-output regression network**, rather than a classification logit. In outline:
+The internal study workflow adapts Grad-CAM to a **single-output regression network**, rather than a classification logit. In outline:
 
 1. Preprocess a feed-bowl crop as **RGB, 224 × 224**, using the same ImageNet normalization as the regression model.
-2. Register forward and backward hooks on a late EfficientNet feature-extraction block; the documented notebook references **`model.features[6]`**.
+2. Register forward and backward hooks on a late EfficientNet feature-extraction block; the internal method records reference **`model.features[6]`**.
 3. Run a forward pass and obtain the scalar **log1p-scale** prediction.
 4. Backpropagate the scalar output to obtain gradients of the selected block's activations.
 5. Spatially average gradients within channels; multiply by feature activations and sum across channels.
@@ -27,7 +27,7 @@ The documented October notebook adapts Grad-CAM to a **single-output regression 
 
 ## Reproducibility notes
 
-Record the exact checkpoint, preprocessing, feature layer, target scalar (before or after back-transformation), normalization, colormap, and overlay opacity when producing published figures. The complete original Grad-CAM notebook and final visualization assets are **not included** in this documentation package. Do not imply this README provides a ready-to-run Grad-CAM implementation.
+Record the exact checkpoint, preprocessing, feature layer, target scalar (before or after back-transformation), normalization, colormap, and overlay opacity when producing published figures. The complete Grad-CAM scripts, notebooks, and final visualization assets are **not published** in this repository. This page describes the methodology; it does not provide a ready-to-run implementation.
 
 ## Related methods
 
