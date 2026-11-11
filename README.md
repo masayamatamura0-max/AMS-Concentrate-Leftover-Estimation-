@@ -82,10 +82,6 @@ The methods are documented in separate pages:
 
 The final exclusion criteria and performance statistics should be reported from the finalized analysis. The independent evaluation observations are not equivalent to external validation at unfamiliar farms.
 
-### Research procedure versus the distributed GUI
-
-The original research records describe frame-sampling options around **0.05–0.20 s** and may have included additional rotated detection candidates; the exact settings used for the final scientific results require confirmation. By contrast, the **distributed GUI** defaults to **1.00-s** frame sampling. These are operational defaults intended to improve processing speed, and should **not** be assumed equivalent to the validated research protocol without comparison.
-
 ## Repository contents
 
 ```text
