@@ -6,7 +6,7 @@
 
 ## Download Windows GUI Application
 
-**[Download the latest version of AMS Leftover Estimator]([https://github.com/masayamatamura0-max/AMS-Concentrate-Leftover-Estimation/releases/latest](https://github.com/masayamatamura0-max/AMS-Concentrate-Leftover-Estimation-/releases/latest))**
+**[Download the latest version of AMS Leftover Estimator]([https://github.com/masayamatamura0-max/AMS-Concentrate-Leftover-Estimation/releases/latest](https://github.com/masayamatamura0-max/AMS-Concentrate-Leftover-Estimation-/releases/latest)**
 
 The Windows GUI enables users to estimate concentrate leftovers directly from images or short video clips without installing Python or configuring a deep-learning environment.
 
