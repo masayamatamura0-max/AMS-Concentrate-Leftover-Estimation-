@@ -20,8 +20,6 @@ The Windows GUI enables users to estimate concentrate leftovers directly from im
    - `Model/EfficientNet.pth`
 5. Open a cropped image, full image, or video clip. Prediction starts automatically after file selection.
 
-**Note:** Trained model weights are required separately and are not included in the application ZIP. The GUI automatically searches for the model weights in supported locations.
-
 ## Overview
 
 AMS software can record the amount of concentrate **dispensed** to an individual cow, but dispensed feed is not necessarily consumed feed. Feed remaining in the AMS bowl can therefore affect estimates of concentrate intake. This project evaluates a camera-based approach to estimate the **mass of concentrate leftovers (g)**.
