@@ -4,6 +4,24 @@
 
 > **Project status:** Documentation associated with *Estimation of automated milking system concentrate leftovers with 2-dimensional images and machine learning* (Thomas et al.; manuscript in preparation). The research values described below are taken from the existing project documentation and should be checked against the final manuscript, source notebook, and data manifest. This repository is not a complete, independently executable reproduction of model training.
 
+## Download Windows GUI Application
+
+**[Download the latest version of AMS Leftover Estimator]([https://github.com/masayamatamura0-max/AMS-Concentrate-Leftover-Estimation/releases/latest](https://github.com/masayamatamura0-max/AMS-Concentrate-Leftover-Estimation-/releases/latest))**
+
+The Windows GUI enables users to estimate concentrate leftovers directly from images or short video clips without installing Python or configuring a deep-learning environment.
+
+### Installation and usage
+
+1. Download `AMS-Leftover-Estimator-app.zip` from **Releases → Assets**.
+2. Extract the ZIP file.
+3. Run `AMS-Leftover-Estimator.exe`, keeping the `_internal` folder alongside it.
+4. Place the trained model weights in a `Model` folder:
+   - `Model/Detectron2.pth`
+   - `Model/EfficientNet.pth`
+5. Open a cropped image, full image, or video clip. Prediction starts automatically after file selection.
+
+**Note:** Trained model weights are required separately and are not included in the application ZIP. The GUI automatically searches for the model weights in supported locations.
+
 ## Overview
 
 AMS software can record the amount of concentrate **dispensed** to an individual cow, but dispensed feed is not necessarily consumed feed. Feed remaining in the AMS bowl can therefore affect estimates of concentrate intake. This project evaluates a camera-based approach to estimate the **mass of concentrate leftovers (g)**.
