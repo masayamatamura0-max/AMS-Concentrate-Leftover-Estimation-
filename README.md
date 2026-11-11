@@ -96,8 +96,6 @@ gui/
   README.md                   Windows GUI user guide
 ```
 
-The GitHub repository is **documentation-focused**. The compiled GUI (`.exe` and `_internal/`), trained checkpoints (`.pth`), and selected example media are **release assets**, not ordinary files in the Git repository. **Neither the inference source code nor the training and evaluation notebooks are published here.**
-
 ## Data availability and reproducibility
 
 The release package contains **only selected example clips and cropped images**. The full camera recordings, complete development/validation/evaluation data, and associated animal- or session-level records are **not distributed** in this repository or its release ZIP. Similarly, training code and notebooks are not provided. The written methods and downloadable GUI therefore support understanding and applying the trained models but do not constitute a complete, independently reproducible model-training package.
