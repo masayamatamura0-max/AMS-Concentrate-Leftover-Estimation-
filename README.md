@@ -2,8 +2,6 @@
 
 **Research methods and a Windows GUI for estimating concentrate remaining in an automated milking system (AMS) feed bowl from images or short video clips.**
 
-> **Project status:** Documentation associated with *Estimation of automated milking system concentrate leftovers with 2-dimensional images and machine learning* (Thomas et al.; manuscript in preparation). The research values described below are taken from the existing project documentation and should be checked against the final manuscript, source notebook, and data manifest. This repository is not a complete, independently executable reproduction of model training.
-
 ## Download Windows GUI application
 
 **[Download the latest AMS Leftover Estimator for Windows](../../releases/latest)**
