@@ -6,7 +6,7 @@
 
 A regression model predicts the **mass of concentrate remaining in an AMS feed bowl, in grams**, from a cropped RGB image. The input may be (1) a bounding-box crop produced by Detectron2, or (2) an already cropped image provided directly to the GUI.
 
-The primary model-development dataset described in the project documentation includes **315 controlled-weight images**: 15 images at each 50-g reference-weight level from **0 through 1,000 g**. Of these, **252** were allocated to training and **63** to internal validation, with a stratified 80:20 split by exact reference weight. A separate set of **92 naturally occurring** leftover observations was reserved for independent evaluation. See [Study design](00_study_design_and_data.md) for qualifications about grouping and data provenance.
+The primary model-development dataset described in the project documentation includes **315 controlled-weight images**: 15 images at each 50-g reference-weight level from **0 through 1,000 g**. Of these, **252** were allocated to training and **63** to internal validation, with a stratified 80:20 split by exact reference weight. A separate set of **92 naturally occurring** leftover observations was initially available; **two were excluded**, leaving **90 in the final independent evaluation**. See [Study design](00_study_design_and_data.md) for qualifications about grouping and data provenance.
 
 ## Image preprocessing
 
@@ -91,4 +91,4 @@ Report errors using back-transformed predictions in **grams**; see [Model evalua
 
 ## Implementation and reproducibility boundary
 
-Once the user adds the GUI code, `gui/inference.py` provides the image transform, checkpoint loading, and gram-scale prediction, while `gui/app.py` manages input selection and display. This repository's documentation alone does **not** include the original complete EfficientNet training pipeline, its manifests, or the trained `.pth` files; it cannot establish bit-for-bit training reproducibility.
+Once the user adds the GUI code, `gui/inference.py` provides the image transform, checkpoint loading, and gram-scale prediction, while `gui/app.py` manages input selection and display. This repository's documentation alone does **not** include the original complete EfficientNet training pipeline, its manifests, or the full training-data manifests; it cannot establish bit-for-bit training reproducibility. The distributed Windows release ZIP does include trained inference checkpoints in its `Model/` folder.

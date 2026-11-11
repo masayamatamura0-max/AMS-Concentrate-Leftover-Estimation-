@@ -32,7 +32,7 @@ The split used `train_test_split(test_size=0.2, random_state=42, stratify=true_w
 
 ### Independent evaluation
 
-Project documentation reports **92 naturally occurring leftover observations**, collected separately from controlled-weight images. The reported reference-weight distribution spans approximately **1 to 1,459 g**, with a median around **14.5 g**; these figures should be reconfirmed against final data.
+The naturally occurring dataset initially contained **92 observations**, collected separately from the controlled-weight images. **Two observations were excluded**, leaving **90 for the final independent evaluation**. The precise reasons for exclusion must be documented from the final data manifest or manuscript. An earlier project summary reported reference weights of approximately **1 to 1,459 g** (median **14.5 g**) for the original observations; these descriptive statistics **must be recalculated for the final 90-observation set** rather than assumed to remain unchanged.
 
 The naturally occurring test observations are a useful independent observation set, but use of the same or similar on-site feeder/camera system does **not** establish generalization to new farms or imaging systems. In addition, the test set may include reference weights **above the 1,000-g development range**, which should be explicitly characterized in performance reporting.
 
@@ -70,7 +70,7 @@ The Windows GUI reads an already prepared image or video and predicts leftover w
 ## Verification required before publication
 
 - Confirm the final controlled-weight image counts and whether multiple images correspond to a shared observation.
-- Verify the independent-test sample size and reference-weight distribution.
+- Document the two independent-test exclusions (92 initially, 90 analyzed) and recalculate the final reference-weight distribution.
 - Reconcile notebook comments, configured clip windows, and actual saved clip lengths.
 - Identify the precise timestamp-alignment rule used for each observation.
 - Document camera positioning and acquisition conditions from original laboratory records.

@@ -8,6 +8,12 @@ This repository documents the study *Estimation of automated milking system conc
 
 Once the GUI source is added separately, the `gui/` directory provides the inference application. **A working inference GUI is not the same as a full model-training reproduction package.** The original complete research notebook, all intermediate scripts, and data manifests are not included in this documentation-only package.
 
+## Windows release contents
+
+The separately packaged `AMS-Leftover-Estimator-app.zip` release contains `AMS-Leftover-Estimator.exe`, the `_internal/` runtime folder, a `Model/` directory with **Detectron2.pth** and **EfficientNet.pth**, and a `data/` folder with a **selection of example video clips and cropped images**. These example files are not a complete copy of the study dataset.
+
+The trained weights are distributed as release assets, **not** committed directly to Git history. Use and redistribution remain subject to any applicable research agreements and permissions.
+
 ## Not currently distributed
 
 The package does **not** contain:
@@ -15,10 +21,8 @@ The package does **not** contain:
 - Original AMS video recordings, raw camera images, or animal-level observations;
 - The complete training and independent-test image datasets or private manifests;
 - Feed-bowl annotation images/labels used to train the object detector;
-- Trained `Detectron2.pth` and `EfficientNet.pth` weights;
 - The full executed detector/CNN training and evaluation notebooks;
 - Final model evaluation predictions or manuscript-ready result tables;
-- A Windows binary/executable or compiled machine-learning libraries.
 
 The project team should determine whether and how any of these may be released, considering research agreements, collaborator permissions, and privacy.
 
@@ -29,7 +33,7 @@ Methods listed in these documents were transcribed and organized from existing p
 1. Time-alignment and whether each stored clip lasted exactly 4 seconds;
 2. Detector sampling interval (`0.05` versus `0.20` seconds) and use of rotated candidate frames;
 3. Grouping of related images in the train/validation split;
-4. The inclusion/exclusion rules for high-weight independent-test observations;
+4. The documented two exclusions from the original 92 naturally occurring observations, leaving **90 in the final independent evaluation**, including the reason for each exclusion;
 5. Exact final trained checkpoints and selected configurations.
 
 The released GUI uses a **1.00-second/no-rotation** inference default for convenience and speed. This **must not be conflated with scientific replication** of notebook results.
