@@ -4,24 +4,29 @@
 
 > **Project status:** Documentation associated with *Estimation of automated milking system concentrate leftovers with 2-dimensional images and machine learning* (Thomas et al.; manuscript in preparation). The research values described below are taken from the existing project documentation and should be checked against the final manuscript, source notebook, and data manifest. This repository is not a complete, independently executable reproduction of model training.
 
-## Download Windows GUI Application
+## Download Windows GUI application
 
-**[Download the latest version of AMS Leftover Estimator](https://github.com/masayamatamura0-max/AMS-Concentrate-Leftover-Estimation-/releases/latest)**
+**[Download the latest AMS Leftover Estimator for Windows](../../releases/latest)**
 
-The Windows GUI enables users to estimate concentrate leftovers directly from images or short video clips without installing Python or configuring a deep-learning environment.
+Download **`AMS-Leftover-Estimator-app.zip`** from the release's **Assets** section (not GitHub's automatically generated *Source code (zip)* archive). Extract the entire ZIP before launching the app. **Python installation is not required** for the packaged Windows application.
 
-<img width="1917" height="1020" alt="github" src="https://github.com/user-attachments/assets/e4c6a099-9810-4d15-a66b-31e6cee44871" />
+The release package is organized as follows:
 
+```text
+AMS-Leftover-Estimator-app/
+├── AMS-Leftover-Estimator.exe
+├── _internal/                # Required runtime libraries; do not delete
+├── Model/
+│   ├── Detectron2.pth       # Included trained object detector
+│   └── EfficientNet.pth     # Included trained leftover estimator
+└── data/                    # Selected example inputs, NOT the complete dataset
+    ├── Clips/
+    └── Cropped images/
+```
 
-### Installation and usage
+The **two trained model weights are already included** in the `Model/` folder shown above. You do not need to download them separately for this release. Keep the `Model/` and `_internal/` folders alongside the EXE. The `data/` folder contains **only some example clips and cropped images**; it is **not** the complete dataset used for training, internal validation, or independent evaluation. You may also open your own compatible images and clips.
 
-1. Download `AMS-Leftover-Estimator-app.zip` from **Releases → Assets**.
-2. Extract the ZIP file.
-3. Run `AMS-Leftover-Estimator.exe`, keeping the `_internal` folder alongside it.
-4. Place the trained model weights in a `Model` folder:
-   - `Model/Detectron2.pth`
-   - `Model/EfficientNet.pth`
-5. Open a cropped image, full image, or video clip. Prediction starts automatically after file selection.
+To begin, run `AMS-Leftover-Estimator.exe`, choose **Crop or Clip** (the default) or **Full image**, and open a file. Prediction starts automatically. See the [GUI user guide](gui/README.md) for the complete instructions.
 
 ## Overview
 
@@ -51,30 +56,17 @@ flowchart TD
 
 ## Windows GUI: getting started
 
-The GUI is intended for inference with trained checkpoints. It does **not** train Mask R-CNN or EfficientNet. The source is stored in the [`gui/`](gui/) folder; trained weights and generated EXEs are not included in this documentation.
+The GUI is intended for inference with trained checkpoints. It does **not** train Mask R-CNN or EfficientNet. The source files are maintained in the [`gui/`](gui/) folder; the compiled EXE and trained `.pth` checkpoints are distributed separately through the Windows release ZIP, not tracked as ordinary repository files.
 
-### Step 1 — Obtain the application
+### Step 1 — Download and extract the application
 
-Download a Windows release or a GitHub Actions artifact when one is available. For a build created with PyInstaller **`onedir`**, extract the full distribution and keep the executable alongside its supporting `_internal/` directory. `onedir` is recommended for faster startup compared with a single-file bundle.
+Use the **[latest Windows release](../../releases/latest)** and download **`AMS-Leftover-Estimator-app.zip`** under *Assets*. Extract it completely. Keep `AMS-Leftover-Estimator.exe` beside `_internal/`, `Model/`, and the optional `data/` folder as shown above. `onedir` bundles generally start faster than a comparable single-file bundle because their large libraries do not need to be extracted on every launch.
 
-If you maintain the GitHub Actions build workflow, you can build the EXE through **Actions → Build Stage 4 Windows → Run workflow** and select `bundle_mode = onedir`. The exact workflow name and artifact availability depend on the files present in your repository.
+### Step 2 — Confirm the bundled models
 
-### Step 2 — Place the trained models
+The release shown here includes **`Model/Detectron2.pth`** and **`Model/EfficientNet.pth`**. The GUI automatically locates them at startup. The **Model input** indicator shows model availability; click it for paths and advanced settings. **Found** means the file is present, while **Loaded** means the checkpoint has actually been loaded for inference. Loading may take time during the first prediction.
 
-The application looks for these **exact names**:
-
-```text
-AMS-Leftover-Estimator/
-├── AMS-Leftover-Estimator.exe
-├── _internal/                # Required for a PyInstaller onedir build
-└── Model/
-    ├── Detectron2.pth        # Bowl detector
-    └── EfficientNet.pth      # Leftover-weight regressor
-```
-
-The application searches `Model/` beside the input file, one directory above the input file, and beside the EXE (in that priority order). The **Model input** indicator shows whether a checkpoint was found. Click it to see file paths and advanced settings. *Found* and *Loaded* are different states: the weights are loaded into memory when prediction begins.
-
-A checkpoint may require a matching **Detectron2 YAML configuration**, selectable under advanced settings. Checkpoints must be authorized for use and compatible with the implemented architecture.
+If you use your own weights, the app also searches a `Model/` folder beside the input file, one directory above the input file, and beside the EXE, in that order. Checkpoints must match the supported architectures; Detectron2 can require a matching YAML configuration.
 
 ### Step 3 — Choose your input
 
@@ -119,9 +111,9 @@ The project documentation describes a camera mounted over the AMS feed bowl, rec
 | Controlled-weight development images | **315** | 0–1,000 g in 50-g increments; 15 images per level |
 | Training split | **252** | Fit EfficientNet parameters |
 | Internal validation split | **63** | Choose checkpoint and stop training |
-| Separate naturally occurring observations | **92** | Independent evaluation |
+| Naturally occurring observations in final evaluation | **90** | Independent evaluation after excluding 2 of the original 92 observations |
 
-The development split described in the final October research notebook was **80:20, stratified by exact reference mass**. Verify these numbers and any repeated-observation grouping against the final data manifest before publication. The independent observations were separate observations, but **not an external-farm validation set**.
+The naturally occurring dataset initially contained **92 observations**; **two were excluded**, leaving **90 observations in the final independent evaluation**. The specific exclusion reasons should be stated using the final manuscript or data manifest rather than inferred here. The development split described in the final October research notebook was **80:20, stratified by exact reference mass**. Verify these numbers and any repeated-observation grouping against the final data manifest before publication. The independent observations were separate observations, but **not an external-farm validation set**.
 
 ### Object detection and frame selection
 
@@ -166,14 +158,14 @@ gui/
   requirements.txt              App dependencies (added separately)
 DATA_AVAILABILITY.md            Data/code availability and limitations
 CITATION.md                     Provisional project citation
-.gitignore                      Avoids committing weights, data, and builds
+.gitignore                      Keeps bulky weights, data, and builds out of Git history
 ```
 
-The source-code and Windows-build workflow folders can be added or maintained independently of these Markdown documents. No `.pth` files, raw videos, or Windows binaries are supplied here.
+The source-code and Windows-build workflow folders can be added or maintained independently of these Markdown documents. The repository holds documentation and optionally GUI source code; the release ZIP provides the compiled EXE, the two trained `.pth` files, and a **limited set of example clips and images**. The complete research dataset and training notebooks are not distributed.
 
 ## Data availability, reproducibility, and citation
 
-The repository documentation does **not** make raw recordings, animal-level records, model-training manifests, final trained checkpoints, or the original full training notebooks publicly available. See [Data availability and reproducibility](DATA_AVAILABILITY.md) for the precise scope. The research manuscript's final protocol should take precedence when it has been reconciled with executable notebooks and source records.
+The repository documentation does **not** provide complete raw recordings, animal-level records, model-training manifests, or the full original training notebooks. The **compiled Windows release does include two inference checkpoints** and a **partial example dataset** as described above. See [Data availability and reproducibility](DATA_AVAILABILITY.md) for the precise scope. The research manuscript's final protocol should take precedence when it has been reconciled with executable notebooks and source records.
 
 For attribution and the current manuscript-in-preparation reference, see [Citation](CITATION.md). Confirm the final author list and bibliographic details before using a formal published citation.
 
