@@ -7,6 +7,8 @@
 ## Download Windows GUI application
 
 **[Download the latest AMS Leftover Estimator for Windows](../../releases/latest)**
+<img width="1917" height="1020" alt="github" src="https://github.com/user-attachments/assets/2b9aa0e4-d79a-486a-be0e-08d9b104d8cf" />
+
 
 Download **`AMS-Leftover-Estimator-app.zip`** from the release's **Assets** section (not GitHub's automatically generated *Source code (zip)* archive). Extract the entire ZIP before launching the app. **Python installation is not required** for the packaged Windows application.
 
