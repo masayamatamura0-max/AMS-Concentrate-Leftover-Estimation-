@@ -86,7 +86,7 @@ The first prediction can be slower than subsequent ones because the models load 
 For video clips, the current GUI:
 
 - Samples at **1.00-s intervals by default**.
-- Uses frames in their **original orientation**; it does **not** add 180° rotated versions.
+- Uses frames in their **original orientation**.
 - Runs Detectron2 **once on each sampled frame**.
 - Chooses the crop with the **highest accepted detector confidence** (default confidence threshold **0.90**).
 - Applies EfficientNet **once** to that selected crop.
