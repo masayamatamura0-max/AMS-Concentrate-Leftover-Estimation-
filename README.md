@@ -10,6 +10,9 @@
 
 The Windows GUI enables users to estimate concentrate leftovers directly from images or short video clips without installing Python or configuring a deep-learning environment.
 
+<img width="1917" height="1020" alt="github" src="https://github.com/user-attachments/assets/e4c6a099-9810-4d15-a66b-31e6cee44871" />
+
+
 ### Installation and usage
 
 1. Download `AMS-Leftover-Estimator-app.zip` from **Releases → Assets**.
