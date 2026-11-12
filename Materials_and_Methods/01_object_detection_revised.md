@@ -2,15 +2,11 @@
 
 [← Research overview](../README.md) · [02 — Leftover-weight estimation](02_leftover_weight_estimation.md) · [03 — Grad-CAM](03_gradcam_interpretation.md)
 
-This page describes the feeder-detection and image-extraction methods and results from the study *Estimation of automated milking system concentrate leftovers with 2-dimensional images and machine learning* (Thomas et al.; JDS Communications manuscript). The detector identifies the feeder in images from an automated milking system (AMS) and provides a rectangular crop for the subsequent EfficientNet V2-S model.
-
 ## Materials and methods
 
 ### Camera and annotated images
 
-A Reolink RLC-511W camera was mounted on the ceiling of the AMS room at the University of Guelph's Ontario Dairy Research Centre (Elora, Ontario, Canada), approximately 2.3 m above the feeder. Fifty PNG screenshots were obtained from video recordings at different times of day and with different amounts of leftover concentrate between November 11 and 17, 2025. The screenshots had an average resolution of approximately 1,376 × 1,032 pixels.
-
-The feeder was manually outlined in each screenshot as a closed polygon using LabelMe. The annotations were assigned a single foreground class (`feeder`) and converted from individual LabelMe JSON files to a combined COCO-format instance-segmentation annotation file. Thirty images were used for training, and the remaining 20 were held out for testing. Both subsets came from the same camera, barn, and collection period.
+A Reolink RLC-511W camera was mounted on the ceiling of the AMS room at the University of Guelph's Ontario Dairy Research Centre. The screenshots had an average resolution of approximately 1,376 × 1,032 pixels. The feeder was manually outlined in each screenshot as a closed polygon using LabelMe. The annotations were assigned a single foreground class (`feeder`) and converted from individual LabelMe JSON files to a combined COCO-format instance-segmentation annotation file. Thirty images were used for training, and the remaining 20 were held out for testing.
 
 ### Mask R-CNN training
 
@@ -72,12 +68,4 @@ The detector achieved the following results on the **20 held-out screenshots**:
 
 The total training loss decreased from approximately **1.86** at iteration 19 to **0.11** at iteration 599. Training took approximately **80 minutes**. These results indicate close agreement between detected feeder regions and manual annotations within the studied camera and feeder setup.
 
-### Extracted feeder images
-
-One bounding-box crop was selected per video clip for regression. The **315 model-development crops** had a median width of **426 pixels** (range: 397–466) and a median height of **445 pixels** (range: 426–467). Among the **92 independent-test images**, 90 had a median width of **413 pixels** (range: 389–469) and a median height of **433 pixels** (range: 409–467). The other two test images had lower resolutions (**188 × 197** and **194 × 203 pixels**) because their original recordings were unavailable.
-
-The detection scores above assess **feeder localization and segmentation**, not leftover-weight prediction accuracy. Regression training and test performance are described in [02 — Leftover-weight estimation](02_leftover_weight_estimation.md).
-
-## Interpretation and scope
-
-The method accurately localized the feeder in held-out images acquired from the **same AMS installation**. Its performance on different AMS brands, feeder geometries, camera placements, or lighting conditions was not established by this detector test. For reproduction of the exact numerical results, the original training/test images, annotations, trained checkpoint, software configuration, and evaluation code are required.
+Regression training and test performance are described in [02 — Leftover-weight estimation](02_leftover_weight_estimation.md).
