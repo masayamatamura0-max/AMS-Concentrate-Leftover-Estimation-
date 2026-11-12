@@ -2,8 +2,6 @@
 
 **Research overview, detailed Materials and Methods, and a downloadable Windows application for estimating concentrate leftovers from automated milking system (AMS) camera images.**
 
-This repository accompanies *Estimation of automated milking system concentrate leftovers with 2-dimensional images and machine learning* (Thomas et al.; manuscript in preparation). It provides background on the study and detailed methodological descriptions intended to complement the concise Materials and Methods section of the manuscript.
-
 ## Background and research objective
 
 Automated milking systems can record the amount of concentrate **dispensed** to each cow, but this does not necessarily equal the amount **consumed**, because some feed may remain in the feeding bowl. Direct measurement of leftover concentrate after each milking visit is labor-intensive. A camera-based estimate of leftover weight could help characterize actual concentrate consumption and support more precise feeding management.
