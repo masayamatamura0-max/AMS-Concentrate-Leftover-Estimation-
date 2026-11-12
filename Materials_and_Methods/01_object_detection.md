@@ -15,8 +15,6 @@ COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml
 MODEL.ROI_HEADS.NUM_CLASSES = 1
 ```
 
-The checkpoint was trained for the target feeder. The original annotation dataset, detector-training hyperparameters, and final stand-alone detector accuracy are **not included** in this repository; do not infer or invent those details from the downloadable application. A custom checkpoint needs the corresponding network configuration.
-
 ### Candidate generation versus acceptance
 
 The internal research records describe an internal Detectron2 test-score threshold as low as `SCORE_THRESH_TEST = 0.30` to retrieve candidates. That **candidate-generation threshold** is separate from the final criterion used to accept the best bowl crop. The reported **minimum accepted detection confidence is 0.90**.
