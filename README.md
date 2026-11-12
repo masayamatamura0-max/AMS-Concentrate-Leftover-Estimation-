@@ -80,8 +80,6 @@ The methods are documented in separate pages:
 | Excluded naturally occurring observations | **2** | Excluded before final independent evaluation |
 | **Final independent evaluation** | **90** | Evaluate naturally occurring leftovers |
 
-The final exclusion criteria and performance statistics should be reported from the finalized analysis. The independent evaluation observations are not equivalent to external validation at unfamiliar farms.
-
 ## Repository contents
 
 ```text
@@ -100,8 +98,8 @@ gui/
 
 The release package contains **only selected example clips and cropped images**. The full camera recordings, complete development/validation/evaluation data, and associated animal- or session-level records are **not distributed** in this repository or its release ZIP. Similarly, training code and notebooks are not provided. The written methods and downloadable GUI therefore support understanding and applying the trained models but do not constitute a complete, independently reproducible model-training package.
 
-The two trained checkpoints are included in the Windows release for inference. Their use, any third-party data, and redistribution remain subject to applicable permissions. No public software or data license is implied unless the repository explicitly supplies one.
+The two trained checkpoints are included in the Windows release for inference.
 
 ## Citation
 
-**Manuscript in preparation:** *Estimation of automated milking system concentrate leftovers with 2-dimensional images and machine learning* (Thomas et al.). Confirm the definitive title, author order, journal, year, and DOI before using a formal bibliographic citation. When reporting results obtained with the GUI, specify the release version and any nondefault inference settings.
+**Manuscript in preparation:** *Estimation of automated milking system concentrate leftovers with 2-dimensional images and machine learning* (Thomas et al.).
