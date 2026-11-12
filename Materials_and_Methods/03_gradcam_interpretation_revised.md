@@ -2,10 +2,6 @@
 
 [← Research overview](../README.md) · [01 — Object detection](01_object_detection.md) · [02 — Leftover-weight estimation](02_leftover_weight_estimation.md)
 
-## Objective
-
-Gradient-weighted Class Activation Mapping (Grad-CAM) was used to visualize image regions associated with predictions from the trained EfficientNet V2-S **regression** model described in [section 02](02_leftover_weight_estimation.md). Unlike classification Grad-CAM, the differentiation target was the model's **scalar prediction on the log-transformed weight scale**, $\hat{y}$, rather than a class score or a prediction back-transformed to grams.
-
 ## Grad-CAM calculation
 
 Grad-CAM was generated with the trained model in evaluation mode, without additional training or random image augmentation. The same feeder crops and preprocessing used for weight prediction were used for visualization (see [section 02](02_leftover_weight_estimation.md)). Activations and gradients were obtained from a late-stage convolutional feature-extraction block.
