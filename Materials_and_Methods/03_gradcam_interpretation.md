@@ -1,42 +1,65 @@
-# 03 — Grad-CAM interpretation of leftover-weight predictions
+# 03 — Interpretation of weight predictions using Grad-CAM
 
-[← Repository homepage](../README.md) · [01 — Object detection](01_object_detection.md) · [02 — Leftover-weight estimation](02_leftover_weight_estimation.md)
+[← Research overview](../README.md) · [01 — Object detection](01_object_detection.md) · [02 — Leftover-weight estimation](02_leftover_weight_estimation.md)
 
-## Purpose
+## Objective and interpretation target
 
-**Gradient-weighted Class Activation Mapping (Grad-CAM)** was used to examine which spatial regions of a cropped feed-bowl image were associated with the trained **EfficientNet V2-S** regression output. Unlike a conventional classification Grad-CAM, the target was a **single continuous prediction** of transformed leftover weight, not a class probability.
+**Gradient-weighted Class Activation Mapping (Grad-CAM)** was used to visualize spatial image features associated with **EfficientNet V2-S's predicted concentrate leftover weight**. This is **regression Grad-CAM**, not a classification heatmap: the scalar target for differentiation was the trained model's **log-transformed regression output**, \(\widehat{y}=\widehat{\ln(1+w)}\), not a predicted class score or the final back-transformed grams.
 
-## Regression Grad-CAM procedure
+The analyzed input was the **same rectangular feeder crop** used for mass prediction (section 02), including any visible background within that box. Although Mask R-CNN provided an instance mask during feeder detection, its mask was **not** applied to erase the background before Grad-CAM or EfficientNet regression.
 
-The documented workflow used a late-stage EfficientNet feature-extraction block, **`model.features[6]`**, to generate the activation map.
+## Model state and image preprocessing
 
-1. Prepare each feed-bowl crop as an **RGB 224 × 224** input using the same ImageNet normalization applied during regression inference.
-2. Register forward and backward hooks for the selected feature block to collect feature activations and output gradients.
-3. Compute the model's scalar **log1p-scale** prediction and backpropagate that output to the selected feature block.
-4. Average the gradients spatially within each channel to obtain channel weights.
-5. Compute a weighted combination of the recorded activation maps and apply a rectified linear unit (ReLU).
-6. Normalize the resulting two-dimensional activation map for display, resize it to the crop dimensions, and overlay it on the original crop as a heatmap.
+Grad-CAM was computed using the **trained EfficientNet V2-S checkpoint in evaluation mode**, with **no additional model training** and **no random image augmentation**. Crops were converted to **RGB**, resized to **224 × 224 pixels** and normalized with ImageNet means **(0.485, 0.456, 0.406)** and standard deviations **(0.229, 0.224, 0.225)**. Heatmaps were drawn over the corresponding original RGB crop after resizing to the 224 × 224 display size.
 
-For feature-map channel \(k\), spatial position \((i,j)\), and scalar model output \(y\), the channel weight is:
+The supplied manuscript identifies the target as a **late-stage convolutional feature-extraction block**. The preceding repository documentation identifies the selected PyTorch module as **`model.features[6]`**. The exact module/hook placement should be checked in the executed visualization script and saved model definition before claiming bit-for-bit reproduction of the original heatmaps.
 
-$$
-\alpha_k = \frac{1}{Z}\sum_i\sum_j \frac{\partial y}{\partial A_{ij}^{k}},
-$$
+## Computational procedure
 
-where \(A_{ij}^{k}\) is the activation at that location and \(Z\) is the number of spatial positions in the feature map. The display map is:
+1. Load the frozen pretrained-and-fine-tuned **EfficientNet V2-S** regression checkpoint and set it to evaluation mode.
+2. Preprocess the selected feeder crop exactly as for inference (RGB, 224 × 224, ImageNet normalization).
+3. Register forward/backward hooks on the selected late-stage convolutional feature block to obtain activations \(A^k_{ij}\) and their gradients with respect to the **scalar log-scale regression output** \(\widehat y\).
+4. Perform a forward pass and backpropagate from \(\widehat y\) to compute \(\partial \widehat y/\partial A^k_{ij}\).
+5. Spatially average the gradients within each feature channel to obtain importance weights \(\alpha_k\).
+6. Calculate the weighted sum of feature maps and apply the rectified linear unit (ReLU).
+7. Normalize the activation map to **0–1** for visualization, resize it to **224 × 224 pixels by bilinear interpolation**, and render it using the **JET colormap**.
+8. Overlay the heatmap on the original resized crop using **45% heatmap opacity** and **55% original image**.
 
-$$
-L_{\mathrm{GradCAM}} = \operatorname{ReLU}\!\left(\sum_k \alpha_k A^k\right).
-$$
+For a feature map of \(Z\) spatial positions in each channel \(k\), the channel weight and the unnormalized display map are:
 
-Each heatmap was normalized to a **0–1** display range before it was overlaid on the corresponding image. Overlay color and transparency are visualization choices, not measurements of residual mass.
+\[
+\alpha_k=\frac{1}{Z}\sum_i\sum_j\frac{\partial\widehat y}{\partial A^k_{ij}},
+\]
+
+\[
+L_{\mathrm{Grad-CAM}}=\mathrm{ReLU}\left(\sum_k\alpha_k A^k\right).
+\]
+
+The resulting map is scaled to the **0–1** display interval before conversion to an overlay. The JET colors and per-image normalization are display conventions, **not calibrated grams or contribution coefficients**.
 
 ## Interpretation and limitations
 
-Grad-CAM provides a **qualitative indication of image regions associated with a prediction**. It does **not** identify causal contributions of individual feed particles, establish that the network learned only feed-relevant features, or quantify uncertainty in the predicted weight.
+Grad-CAM is a **qualitative sensitivity visualization** for the selected regression output. A prominent activation does not establish that a visible pellet caused a particular predicted value, nor does a low activation establish absence of a feature's influence. The highlighted regions may include pellets, dust, bowl edges, glare, illumination patterns and other image features within the bounding box.
 
-Activation patterns can be affected by crop framing, visible bowl edges, background, reflections, and lighting. Heatmaps normalized separately for each image must not be interpreted as directly comparable absolute importance values across observations. Grad-CAM should therefore be considered alongside independent prediction-error analysis, rather than as a substitute for it.
+Because each heatmap is normalized separately, the intensity of red or blue areas should **not** be compared as an absolute importance scale between different photographs. Grad-CAM neither quantifies prediction uncertainty nor replaces evaluation against manually weighed leftovers. Interpret heatmaps alongside the independent-test errors and the weight distribution described in [section 02](02_leftover_weight_estimation.md).
 
-## Reporting and availability
+## Parameters required to reproduce the figures
 
-When presenting Grad-CAM figures, document the trained checkpoint, preprocessing, feature block, scalar target, display normalization, and overlay settings. The written procedure is provided to support interpretation of the study; the underlying Grad-CAM script and analysis notebooks are not publicly distributed here.
+| Component | Reported or documented setting |
+| --- | --- |
+| Trained model | EfficientNet V2-S regression checkpoint |
+| Input | Rectangular feeder bounding-box crop, RGB 224 × 224 |
+| Normalization | ImageNet RGB mean and SD |
+| Differentiation target | Scalar **log1p-scale** regression output |
+| Feature block | Late-stage convolutional block; preceding repository notes identify `model.features[6]` |
+| Channel weights | Spatial mean of gradients |
+| Map construction | Weighted sum of feature maps followed by ReLU |
+| Display range | Individually normalized to 0–1 |
+| Heatmap size | 224 × 224 via bilinear interpolation |
+| Color map | JET |
+| Overlay | 45% heatmap + 55% original crop |
+| Model behavior | Evaluation mode; no random augmentation or training |
+
+## Code and data availability
+
+The repository documents the procedure, but the original **Grad-CAM script, exact checkpoint-to-feature-hook mapping and analyzed research images** are not included. Consequently, the figure-generation settings are specified for transparency, but pixel-for-pixel heatmap reproduction requires those additional artifacts.
