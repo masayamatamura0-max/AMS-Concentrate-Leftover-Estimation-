@@ -1,63 +1,55 @@
-# Materials and Methods — Object detection and image extraction
+# 01 — Object detection and feed-bowl image extraction
 
-[Repository homepage](../README.md) · [Leftover-weight estimation](02_leftover_weight_estimation.md)
+[← Repository homepage](../README.md) · [02 — Leftover-weight estimation](02_leftover_weight_estimation.md) · [03 — Grad-CAM](03_gradcam_interpretation.md)
 
-## Aim
+## Purpose and image acquisition
 
-The object-detection stage finds the concentrate feed bowl in a full-resolution camera frame and defines an image region for estimating leftover mass. This stage does **not** predict weight; the subsequent EfficientNet model does that.
+Automated localization of the AMS feed bowl allows an image of a consistent region of interest to be passed to the concentrate leftover-weight regression model. Detection and weight estimation are separate tasks: **Mask R-CNN identifies the bowl**, whereas **EfficientNet predicts the mass of concentrate left inside the bowl**.
 
-## Detection architecture
+The camera used in the documented workflow was positioned above the feeding area of the AMS. On-site video was recorded at approximately **2,560 × 1,920 pixels and 20 frames/s**. Short video clips were associated with reference observations using recorded timestamps. The time-alignment procedure used experiment records and, when relevant, recording metadata to find the corresponding on-site camera footage.
 
-The documented detector uses **Mask R-CNN** implemented in **Detectron2**, configured as a **one-class** detector of the AMS feed bowl. The base configuration is reported as:
+The study documentation describes nominal **4-second clips**, but source-dependent extraction windows and reuse of previously saved clips mean that actual clip durations and time alignment should be verified from the final observation manifest.
+
+## Mask R-CNN detector
+
+A **one-class Mask R-CNN** model implemented in **Detectron2** was used to locate the feed bowl. The documented configuration was based on:
 
 ```text
 COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml
 MODEL.ROI_HEADS.NUM_CLASSES = 1
 ```
 
-### Candidate Generation and Detection Acceptance
+This configuration uses a ResNet-50 backbone with a feature pyramid network (FPN) and a region-of-interest head trained for the target feed-bowl class. The final model used a trained detector checkpoint. Detector annotation and fitting details should be sourced from the verified detector-training records rather than inferred from the pretrained architecture alone.
 
-During object detection, `SCORE_THRESH_TEST = 0.30` was used to generate candidate detections. This threshold was distinct from the minimum confidence score of 0.90 required to accept a detected feed bowl for subsequent image cropping. When multiple candidate detections were identified within a frame, the detection with the highest confidence score was selected, provided that its score met the acceptance threshold of 0.90. These confidence scores represent the object detector's classification confidence rather than uncertainty estimates associated with leftover-weight prediction.
+### Candidate detections and acceptance criterion
 
-## Sampling and selection from a clip
+The documented Detectron2 configuration used a low **candidate-generation score threshold of 0.30** (`SCORE_THRESH_TEST`) to obtain candidate instances. The **minimum confidence score for accepting a feed-bowl detection was 0.90**. These are distinct decisions: candidate generation allows possible detections to be assessed, whereas the acceptance rule determines whether a detected region is suitable for subsequent cropping.
 
-The research workflow decodes short clips using OpenCV and examines selected frames. The general best-crop procedure is:
+When several candidate instances or frames were available, the pipeline retained the eligible candidate with the **highest detector confidence**. A detection that did not reach the acceptance criterion was not treated as an image with zero leftover mass.
 
-1. Sample frames at the research-run frame interval.
-2. Apply the trained Mask R-CNN detector to each considered frame/orientation.
-3. Identify the candidate feed-bowl instance with the **highest confidence score** across all considered frames.
-4. Accept the crop if the selected candidate meets the minimum confidence criterion (**0.90** in the documented configuration).
-5. Use its **bounding-box coordinates** to crop the frame, and preserve metadata about the selected frame and score.
-6. 
-## Research processing versus current GUI
+## Selecting a crop from images or clips
 
-The original internal research records describe more than one sampling configuration. Because the executed research files are not provided here, the exact settings used for the reported scientific evaluation need confirmation:
+For still images, Mask R-CNN predicts bowl instances, and an accepted detection is used to extract the corresponding region. For a short video, sampled frames are analyzed, and the accepted detection with the highest confidence across the considered frames is selected.
 
-| Implementation detail | Internal research records | Current Windows GUI |
-| --- | --- | --- |
-| Sampling interval | `0.05 s` in one constant; `0.20 s` in helper defaults/diagnostics; confirm executed call | **1.00 s** by default, adjustable |
-| Artificial 180° frame rotation | May be enabled in the research workflow | **Not performed** |
-| Detectron2 passes per sampled frame | Original and possibly rotated candidate | **One original-frame pass** |
-| Crop selection | Highest accepted detector confidence | Highest accepted detector confidence |
-| Image region passed to EfficientNet | Bounding-box crop | Bounding-box crop |
-| EfficientNet predictions per clip | One selected crop in the described procedure | **One** selected crop |
+The documented pipeline follows these steps:
 
-For example, a 4-second clip at 20 frames/s contains approximately 80 frames. With a 1.00-second GUI interval, sampled frame positions are approximately **0, 1, 2, and 3 seconds**. Actual extraction depends on available video frames and valid FPS metadata.
+1. Read the still image or decode the short video using OpenCV.
+2. For clips, sample frames at the selected analysis interval.
+3. Run the detector and obtain candidate bowl instances and their scores.
+4. Select the highest-confidence candidate meeting the **0.90** acceptance criterion.
+5. Use its **axis-aligned bounding box** to extract a rectangular feed-bowl crop.
+6. Pass the selected crop to the regression model, retaining the selected frame and confidence as processing metadata.
 
-**Do not report 1.00-second/no-rotation processing as the validated study protocol unless that protocol was independently evaluated.** The GUI settings are designed to reduce the number of detector calls.
+The image supplied to EfficientNet is the **bounding-box crop**, not a mask-only image with the surrounding pixels removed. Although Mask R-CNN also estimates segmentation masks, those masks are not applied as foreground-only cutouts in this regression workflow.
 
-## Full-size still images and ready-made crops
+The recorded methodological summary specifies **0.20-second sampling** for clip-based crop selection. Because archived analysis helpers also contain alternative interval settings, the exact interval used to generate the final reported dataset should be confirmed against the executed analysis and saved clip metadata before citing it as a finalized experimental parameter.
 
-- **Full image mode:** run Detectron2 once on the still image, crop the selected feed bowl, and submit the crop to EfficientNet.
-- **Crop or Clip mode (still image):** treat the image as an already prepared bowl crop; skip Detectron2.
-- **Crop or Clip mode (video):** sample original frames, run Detectron2 once on each sampled frame, retain the highest-confidence crop, then call EfficientNet once.
+## Quality control and scope
 
-## Reliability and reporting
+Detection success depends on feed-bowl visibility, image framing, illumination, and the camera/feeder configuration. If no instance meets the acceptance criterion, **no valid bowl crop is produced**; the observation should be identified as unprocessed or missing, not assigned a mass of 0 g.
 
-Low detector confidence, visual obstruction, unusual light, an incomplete bowl, a new feeder geometry, or a corrupted video may prevent a usable crop. Absence of a detection must not be silently converted to a prediction of **0 g**. Report such cases as unprocessed or missing predictions, with counts and exclusion criteria.
+A detector score describes confidence in object identification, **not** uncertainty in the subsequent mass estimate. Using the detector on a different camera installation or feeder geometry would require assessment of detection reliability before using its crops in the weight model.
 
-A methods report should include the detector architecture, training annotation source (once verified), test configuration, candidate and acceptance thresholds, exact frame-sampling interval, rotation setting, bounding-box convention, and quality-control procedure.
+## Method availability
 
-## Availability of the implementation
-
-This repository provides a written description of the detection method and a downloadable compiled GUI. **Detector-training scripts, Python inference source files, and research notebooks are not hosted here.** The trained detector checkpoint is provided in the Windows release for inference.
+The trained detector checkpoint is provided within the downloadable [Windows GUI release](../../../releases/latest) for inference. This repository supplies the written method, not the detector-training code or annotated detector-training dataset.

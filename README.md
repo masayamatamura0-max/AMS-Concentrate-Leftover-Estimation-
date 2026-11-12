@@ -1,105 +1,95 @@
 # Estimation of Concentrate Leftovers in Automated Milking Systems Using Computer Vision
 
-**Research methods and a downloadable Windows application for estimating concentrate leftovers in automated milking system (AMS) feed bowls from images and short video clips.**
+**Study overview, detailed Materials and Methods, and a downloadable Windows GUI for estimating the weight of concentrate remaining in an automated milking system (AMS) feed bowl.**
 
-## Download the Windows GUI application
+This repository accompanies *Estimation of automated milking system concentrate leftovers with 2-dimensional images and machine learning* (Thomas et al.; manuscript in preparation). It provides methodological details that complement the more concise Materials and Methods section of the manuscript, along with instructions for using the trained models through a Windows application.
 
-**[Download the latest AMS Leftover Estimator (Windows)](../../releases/latest)**
-<img width="1917" height="1020" alt="github" src="https://github.com/user-attachments/assets/d213e842-8f45-46c3-9998-fdf46cdadb9f" />
+## Research purpose
 
-Open the release and download **`AMS-Leftover-Estimator-app.zip`** under **Assets**. Do not select GitHub's automatically generated *Source code (zip)* archive, which does not contain the executable.
+AMS software typically records the amount of concentrate **dispensed** during milking. However, some of that feed may remain in the bowl, so the amount dispensed does not necessarily equal the amount **consumed**. Accurate estimation of leftovers could improve individual-cow concentrate-intake estimates without requiring manual weighing after every visit.
 
-### Contents of the application ZIP
+**The objective of this study was to develop and evaluate a camera-based method for estimating the mass of concentrate leftovers (g) using two-dimensional images of AMS feed bowls.**
+
+The approach comprises three components:
+
+1. **Feed-bowl detection:** A one-class Mask R-CNN detector, implemented with Detectron2, identifies the bowl in camera images or sampled video frames.
+2. **Leftover-weight estimation:** The detected rectangular bowl crop is passed to an EfficientNet V2-S regression model to estimate leftover mass in grams.
+3. **Model interpretation:** Gradient-weighted Class Activation Mapping (Grad-CAM) highlights image regions associated with the regression output.
+
+```mermaid
+flowchart LR
+    A[AMS camera image or clip] --> B[Mask R-CNN / Detectron2]
+    B --> C[Selected feed-bowl crop]
+    C --> D[EfficientNet V2-S]
+    D --> E[Estimated leftovers, g]
+    D -. Interpret .-> F[Grad-CAM heatmap]
+```
+
+For an image already cropped to the feed bowl, the detection stage can be skipped. For clip input, the application chooses the highest-confidence accepted bowl crop and makes **one** weight prediction from that crop.
+
+## Materials and Methods
+
+The following pages expand on the scientific methods without requiring a lengthy methodological description in the journal article:
+
+| Detailed method | Contents |
+| --- | --- |
+| **[01 — Object detection](Materials_and_Methods/01_object_detection.md)** | Camera input, clip processing, Mask R-CNN configuration, confidence-based selection, and bounding-box extraction |
+| **[02 — Leftover-weight estimation](Materials_and_Methods/02_leftover_weight_estimation.md)** | Reference images and dataset partitioning, EfficientNet V2-S, preprocessing, training, back-transformation, and performance evaluation |
+| **[03 — Grad-CAM interpretation](Materials_and_Methods/03_gradcam_interpretation.md)** | Grad-CAM for regression, heatmap generation, and limits of interpretation |
+
+The model-development set comprised **315 known-weight images** spanning **0–1,000 g** (252 training and 63 internal-validation images). Separately, **92 naturally occurring observations** were initially available; after excluding two observations, **90** were retained for the final independent evaluation. These counts describe the documented analysis sets, not the contents of the example-data folder in the application release.
+
+## Download the Windows GUI
+
+**[Download the latest AMS Leftover Estimator for Windows](../../releases/latest)**
+
+On the **Releases** page, download **`AMS-Leftover-Estimator-app.zip`** under **Assets**. Do not select GitHub's automatically generated *Source code (zip)* archive; it does not contain the runnable application.
+
+The application ZIP contains the executable, its runtime dependencies, two trained model checkpoints, and a **selection of example files**:
 
 ```text
 AMS-Leftover-Estimator-app/
 ├── AMS-Leftover-Estimator.exe
-├── _internal/                 Required runtime libraries
+├── _internal/              Required runtime files
 ├── Model/
-│   ├── Detectron2.pth         Trained bowl detector
-│   └── EfficientNet.pth       Trained leftover-weight estimator
-└── data/                      Selected examples only
+│   ├── Detectron2.pth      Trained bowl detector
+│   └── EfficientNet.pth    Trained weight-regression model
+└── data/                   Selected examples, not the full study dataset
     ├── Clips/
     └── Cropped images/
 ```
 
-**Both `.pth` model files are included in the release ZIP.** The `data/` directory contains only **a subset of example files**, not the full dataset used in the study.
+### How to use the GUI
 
-### Quick start
+1. **Download and extract** the full ZIP archive. Keep the EXE, `_internal/`, and `Model/` in their original relative locations.
+2. Double-click **`AMS-Leftover-Estimator.exe`**. You do not need to install Python.
+3. Check the compact **Model input** indicator. The application automatically finds the included checkpoints; click the indicator if you want to inspect the selected model paths or advanced settings.
+4. Choose an input mode:
+   - **Crop or Clip** (default): open an already-cropped feed-bowl image or a video clip.
+   - **Full image**: open an uncropped still image so the app can first locate the bowl.
+5. Select an image or clip. **Detection/prediction starts automatically**; the file picker initially opens in the EXE's folder.
+6. Read the estimated leftover weight in **grams** and inspect the prediction preview. Use **Detect / Predict** to repeat the analysis after changing settings.
 
-1. Download `AMS-Leftover-Estimator-app.zip` from [Releases](../../releases/latest) and **extract the ZIP completely**.
-2. Keep `AMS-Leftover-Estimator.exe`, `_internal/`, and `Model/` in the same extracted application directory.
-3. Double-click **`AMS-Leftover-Estimator.exe`**. Installing Python is **not** required.
-4. Use **Crop or Clip** (default) for an already-cropped feed-bowl image or a short video, or select **Full image** for an uncropped still image.
-5. Choose a file. **Prediction starts automatically**. The result is displayed as estimated leftover weight in grams.
+For a cropped image, the feed-bowl preview is shown as one large image. For a full image or video clip, the interface displays the source image/best frame, detection overlay, and selected crop. The **video-sampling default is 1.00 s** and can be changed in the GUI.
 
-The app automatically locates the model files. Click the compact **Model input** indicator to view the model paths and advanced settings. For screenshots, file types, saved outputs, and troubleshooting, see the **[Windows GUI user guide](gui/README.md)**.
+**Important:** The app is for inference using pretrained checkpoints; it does not train either network. A detector confidence score is not a confidence interval for the predicted leftover mass. Results should be interpreted within the range and conditions for which the models were evaluated.
 
-## Study overview
+### Troubleshooting
 
-AMS management software typically records the quantity of concentrate dispensed, but this may differ from the quantity consumed if feed remains in the bowl. This study investigates a two-stage image-analysis approach for estimating **remaining concentrate weight (g)**:
+| Issue | Suggested check |
+| --- | --- |
+| Model not found | Keep `Model/Detectron2.pth` and `Model/EfficientNet.pth` in the extracted app folder; inspect **Model input** |
+| EXE fails to open after moving files | Keep `_internal/` together with the executable |
+| No bowl detected in a full image/clip | Check the image, selected detector checkpoint, and detection threshold |
+| First prediction is slow | The deep-learning libraries and checkpoints may need to load on the first inference |
+| Video cannot be opened | Try a compatible MP4 file; decoding depends on the included OpenCV codecs |
 
-1. **Object detection:** A one-class **Mask R-CNN**, implemented using **Detectron2**, detects the feed bowl in an image or a sampled video frame.
-2. **Leftover-weight estimation:** An **EfficientNet V2-S** regression model predicts the weight of feed remaining from the detected **bounding-box crop**.
+## Repository and data availability
 
-For a previously cropped image, the detector is bypassed and EfficientNet is applied directly. For a video clip, the GUI selects **one highest-confidence crop** from the sampled frames and applies EfficientNet **once**; it does not average predictions across frames.
+This repository publishes **written Materials and Methods and GUI instructions only**. It does **not** contain Python source code, Jupyter notebooks, or model-training scripts. The compiled Windows GUI and trained `.pth` checkpoints are distributed as a GitHub Release rather than committed as regular repository files.
 
-```mermaid
-flowchart LR
-    A[AMS image or video] --> B{Input type}
-    B -->|Cropped image| E[EfficientNet V2-S]
-    B -->|Full image| C[Detectron2 / Mask R-CNN]
-    B -->|Video clip| D[Sample video frames]
-    D --> C
-    C --> F[Highest-confidence detection]
-    F --> G[Bounding-box crop]
-    G --> E
-    E --> H[Estimated leftovers, g]
-```
-
-**Detection confidence describes confidence in finding the feed bowl, not uncertainty in the predicted mass.**
-
-## Materials and Methods
-
-The methods are documented in separate pages:
-
-1. **[Study design, imaging, and datasets](Materials_and_Methods/00_study_design_and_data.md)** — sample acquisition, reference weights, clip preparation, and partitioning.
-2. **[Object detection and image extraction](Materials_and_Methods/01_object_detection.md)** — Mask R-CNN configuration, frame selection, confidence thresholds, and cropping.
-3. **[Leftover-weight estimation](Materials_and_Methods/02_leftover_weight_estimation.md)** — EfficientNet V2-S, image preprocessing, training strategy, and transformation back to grams.
-4. **[Model evaluation](Materials_and_Methods/03_model_evaluation.md)** — error metrics, independent evaluation, and sensitivity analyses.
-5. **[Grad-CAM interpretation](Materials_and_Methods/04_gradcam_interpretation.md)** — qualitative interpretation of regression predictions.
-
-### Dataset summary
-
-| Dataset | Observations or images | Purpose |
-| --- | ---: | --- |
-| Controlled-weight development images | **315** | Reference masses of 0–1,000 g, with 15 images per 50-g level |
-| Training images | **252** | Develop EfficientNet regression model |
-| Internal validation images | **63** | Select checkpoint and monitor training |
-| Naturally occurring observations initially available | **92** | Separate field observations |
-| Excluded naturally occurring observations | **2** | Excluded before final independent evaluation |
-| **Final independent evaluation** | **90** | Evaluate naturally occurring leftovers |
-
-## Repository contents
-
-```text
-README.md
-Materials_and_Methods/
-  00_study_design_and_data.md
-  01_object_detection.md
-  02_leftover_weight_estimation.md
-  03_model_evaluation.md
-  04_gradcam_interpretation.md
-gui/
-  README.md                   Windows GUI user guide
-```
-
-## Data availability and reproducibility
-
-The release package contains **only selected example clips and cropped images**. The full camera recordings, complete development/validation/evaluation data, and associated animal- or session-level records are **not distributed** in this repository or its release ZIP. Similarly, training code and notebooks are not provided. The written methods and downloadable GUI therefore support understanding and applying the trained models but do not constitute a complete, independently reproducible model-training package.
-
-The two trained checkpoints are included in the Windows release for inference.
+The release's `data/` folder contains **selected examples only**. The complete study dataset, original camera recordings, and associated research records are not distributed here. The method descriptions support understanding and use of the trained models but do not constitute a complete executable reproduction of training.
 
 ## Citation
 
-**Manuscript in preparation:** *Estimation of automated milking system concentrate leftovers with 2-dimensional images and machine learning* (Thomas et al.).
+**Associated manuscript (in preparation):** Thomas et al. *Estimation of automated milking system concentrate leftovers with 2-dimensional images and machine learning.* Please use the final published citation when available. When describing GUI-generated results, identify the application release and relevant settings.

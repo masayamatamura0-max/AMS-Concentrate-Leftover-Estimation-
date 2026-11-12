@@ -1,90 +1,88 @@
-# Materials and Methods — Estimation of concentrate leftover weight
+# 02 — Estimation of concentrate leftover weight
 
-[Repository homepage](../README.md) · [Object detection](01_object_detection.md) · [Model evaluation](03_model_evaluation.md)
+[← Repository homepage](../README.md) · [01 — Object detection](01_object_detection.md) · [03 — Grad-CAM](03_gradcam_interpretation.md)
 
-## Objective and input
+## Objective and reference dataset
 
-A regression model predicts the **mass of concentrate remaining in an AMS feed bowl, in grams**, from a cropped RGB image. The input may be (1) a bounding-box crop produced by Detectron2, or (2) an already cropped image provided directly to the GUI.
+The regression task was to estimate the **mass (g) of concentrate remaining in the AMS feed bowl** from the rectangular bowl image selected by the object-detection stage. Known-weight images were used for model development, with separately collected naturally occurring leftovers reserved for independent evaluation.
 
-The primary model-development dataset described in the project documentation includes **315 controlled-weight images**: 15 images at each 50-g reference-weight level from **0 through 1,000 g**. Of these, **252** were allocated to training and **63** to internal validation, with a stratified 80:20 split by exact reference weight. A separate set of **92 naturally occurring** leftover observations was initially available; **two were excluded**, leaving **90 in the final independent evaluation**. See [Study design](00_study_design_and_data.md) for qualifications about grouping and data provenance.
+The documented controlled-weight development set comprised **315 cropped images** with reference weights from **0 to 1,000 g in 50-g increments** (21 levels, 15 images per level). The final model-development partition used **252 training images** and **63 internal-validation images** (80:20), stratified by exact reference weight, with a recorded random seed of **42**.
 
-## Image preprocessing
+A separate collection initially comprised **92 naturally occurring leftover observations**. **Two observations were excluded**, leaving **90 observations for the final independent evaluation**. Exclusion criteria should be reported consistently with the final manuscript and observation manifest; this repository does not assign a reason not established in the documented record. The independent observations were not used to fit model weights, choose a checkpoint, or select training hyperparameters.
 
-Each model input is processed as follows:
+The controlled reference-weight interval is not a guarantee of accuracy beyond 1,000 g. Moreover, a separate evaluation set acquired in the same general recording environment does not establish transferability to unfamiliar farms, feed bowls, or cameras.
 
-1. Convert the image to **RGB**.
-2. Resize to **224 × 224 pixels**.
-3. Convert pixel values to a tensor.
-4. Normalize using ImageNet channel means and standard deviations:
+## Image preparation
 
-| RGB channel | Mean | Standard deviation |
+Each input crop was converted to **RGB**, resized to **224 × 224 pixels**, converted to a tensor, and normalized using the ImageNet channel statistics:
+
+| Channel | Mean | Standard deviation |
 | --- | ---: | ---: |
 | Red | 0.485 | 0.229 |
 | Green | 0.456 | 0.224 |
 | Blue | 0.406 | 0.225 |
 
-This preprocessing is used for validation and inference without random augmentation.
+During training, random image augmentation was applied, including **horizontal flipping** (probability 0.5) and photometric adjustments to brightness, contrast, saturation, and hue. Documented jitter magnitudes were **0.2** for brightness/contrast/saturation and **0.03** for hue. Internal-validation and independent-evaluation crops were processed deterministically, without random augmentation.
 
-### Training-only augmentation
+## EfficientNet V2-S architecture
 
-The internal model-development records describe:
+**EfficientNet V2-S**, implemented using `torchvision.models.efficientnet_v2_s`, was initialized from ImageNet-1K pretrained weights during training. The final classification layer was replaced with a **single-output linear layer**, allowing the network to predict a continuous response instead of a classification probability. The resulting model produced one scalar for each input crop.
 
-- Random horizontal flip, probability **0.5**;
-- Small random rotation, approximately **±10°**;
-- Brightness, contrast, and saturation jitter of **0.2** each;
-- Hue jitter of **0.03**.
+## Response transformation, fitting, and checkpoint selection
 
-The final exact transform order should be confirmed from the finalized analysis records. **Training-only random rotations do not mean that the present GUI rotates video frames.** The current application performs no artificial 180° rotation during detection.
-
-## CNN architecture
-
-The documented architecture is **EfficientNet V2-S** using `torchvision.models.efficientnet_v2_s`, initialized from **ImageNet-1K pretrained weights** during model development. Its terminal classifier is replaced with a **single-output linear layer** for regression:
-
-**Architecture summary:** EfficientNet V2-S with its final classification head replaced by a **single-output regression layer**. This is a methodological description; training code is not provided.
-
-The inference application reconstructs the matching architecture and loads the authorized saved checkpoint without needing to download pretrained weights. A checkpoint produced with another output head or network variant may not load.
-
-## Response transformation and training
-
-Reference mass was transformed to stabilize regression training:
+To fit the regression network, reference weight (in grams) was transformed with the natural logarithm:
 
 $$
- y_{\mathrm{train}}=\ln(1+w), \qquad w=\text{reference leftover mass (g)}.
+y = \ln(1+w), \qquad w = \text{reference leftover weight (g)}.
 $$
 
-The model was trained with **mean squared error on this log-transformed target**, not MSE on grams.
+The training loss was **mean squared error (MSE) on the transformed response scale**. The methodological record lists the following settings:
 
-| Hyperparameter | Value described in internal study records |
+| Setting | Documented value |
 | --- | --- |
 | Optimizer | AdamW |
-| Learning rate | **5 × 10⁻⁵** |
-| Weight decay | **1 × 10⁻⁴** |
-| Batch size | **16** |
-| Maximum epochs | **200** |
-| Early-stopping patience | **20 epochs** |
-| Minimum improvement in validation loss | **0.0001** |
-| Model checkpoint selection | Best internal-validation loss |
+| Initial learning rate | `5 × 10⁻⁵` |
+| Weight decay | `1 × 10⁻⁴` |
+| Batch size | 16 |
+| Maximum epochs | 200 |
+| Early-stopping patience | 20 epochs |
+| Minimum validation-loss improvement | 0.0001 |
+| Checkpoint selection | Lowest internal-validation MSE |
 
-Independent test observations must not be used for optimizer tuning, data augmentation decisions, early stopping, or model selection. Dataset counts and the model-development specification should be reconciled with the final manuscript.
+The independent evaluation observations were kept separate from optimization, early stopping, and model selection to avoid test-set leakage.
 
-## Back-transformation and inference
+## Weight prediction in grams
 
-The model predicts a scalar on the `log1p` scale. The application converts that prediction to grams:
+The network's output is a prediction on the `log1p` scale. It is converted back to grams by:
 
 $$
- \widehat{w}_{\mathrm{g}} = \max\left(0,\exp(\widehat{y})-1\right).
+\widehat{w}_{\mathrm{g}} = \max\!\left(0,\exp(\widehat{y})-1\right).
 $$
 
-Thus a negative value after back-transformation is clipped to **0 g**. This numerical clipping must not be confused with a failed or missing object detection.
+Negative predictions after inverse transformation are clipped to 0 g. This numerical constraint does not mean that failed object detections are assigned zero mass.
 
-For a clip, the application does **not** predict on every sampled frame and average the results. Detectron2 selects the **highest-confidence bowl crop**, and EfficientNet predicts on **that single crop**. This choice improves efficiency but does not guarantee that the selected detector crop minimizes weight-prediction error.
+For a video clip, **one selected feed-bowl crop** is supplied to EfficientNet, producing **one prediction**. Predictions are not averaged over all sampled video frames.
 
-## Validation and potential generalization limits
+## Model evaluation
 
-Model development is based on known reference masses within **0–1,000 g**. Predictions above that range are **extrapolations in the target variable** and should be assessed separately. An independent set from the same recording environment is not equivalent to testing on an unfamiliar farm, feeder, camera, or lighting condition.
+Predictive performance was assessed on weights expressed in **grams** after inverse transformation. Let \(w_i\) be the reference weight and \(\widehat{w}_i\) the predicted weight for the \(i\)-th observation, with \(n\) observations. The evaluation metrics are:
 
-Report errors using back-transformed predictions in **grams**; see [Model evaluation](03_model_evaluation.md). No numerical accuracy claims are made here because the current documentation package does not contain the original measured results table or raw evaluation data.
+$$
+\mathrm{RMSE}=\sqrt{\frac{1}{n}\sum_{i=1}^{n}(w_i-\widehat{w}_i)^2},
+$$
 
-## Implementation and reproducibility boundary
+$$
+\mathrm{MAE}=\frac{1}{n}\sum_{i=1}^{n}|w_i-\widehat{w}_i|,
+$$
 
-The compiled Windows GUI and both trained `.pth` checkpoints are provided through [GitHub Releases](../../../releases/latest) for **inference**. **Python source files, model-training scripts, Jupyter notebooks, and the full original training dataset are not posted in this GitHub repository.** The descriptions above summarize the documented method but are not a complete executable training workflow.
+$$
+R^2=1-\frac{\sum_{i=1}^{n}(w_i-\widehat{w}_i)^2}{\sum_{i=1}^{n}(w_i-\overline{w})^2}.
+$$
+
+Internal-validation results support checkpoint selection; performance on the **90 independent naturally occurring observations** assesses application beyond controlled known-weight images. Accuracy summaries should report the evaluation sample size, distribution of reference masses, and any separately analyzed range restrictions or exclusions. In particular, observed values above the **0–1,000 g development range** should be identified as outside that range.
+
+Numerical accuracy estimates are intentionally not reproduced here without the finalized results table and matched observation manifest. Performance statistics and their treatment of exclusions must be consistent with the accepted manuscript.
+
+## Model availability
+
+A trained `EfficientNet.pth` checkpoint is included in the [Windows GUI release](../../../releases/latest) for inference. Python training and evaluation code, Jupyter notebooks, and the complete research dataset are not published in this repository.
