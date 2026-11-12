@@ -36,7 +36,7 @@ The documented pipeline follows these steps:
 5. Use its **axis-aligned bounding box** to extract a rectangular feed-bowl crop.
 6. Pass the selected crop to the regression model, retaining the selected frame and confidence as processing metadata.
 
-The image supplied to EfficientNet is the **bounding-box crop**, not a mask-only image with the surrounding pixels removed. Although Mask R-CNN also estimates segmentation masks, those masks are not applied as foreground-only cutouts in this regression workflow. The recorded methodological summary specifies **0.20-second sampling** for clip-based crop selection.
+The image supplied to EfficientNet is the **bounding-box crop**, not a mask-only image with the surrounding pixels removed. Although Mask R-CNN also estimates segmentation masks, those masks are not applied as foreground-only cutouts in this regression workflow. For crop selection from 4-second video clips, frames were sampled at 0.20-second intervals.
 
 ## Quality control and scope
 
