@@ -25,11 +25,7 @@ flowchart LR
     D -. interpretation .-> F[Grad-CAM]
 ```
 
-The documented controlled-weight development dataset consisted of **315 images** of known leftover masses between **0 and 1,000 g** (252 training images and 63 internal-validation images). A separate set of naturally occurring leftovers contained 92 initial observations; **90 observations** remained in the restricted independent-test analysis after two high-weight exclusions; full-test performance with all 92 is also reported. Further details on sampling, model development, evaluation, and interpretation are given in the pages linked below.
-
 ## Materials and Methods
-
-These pages provide the full reported research-method details, including camera and animal context, detector fitting, data collection, clip-to-crop selection, regression training, evaluation, and Grad-CAM visualization. They complement the shorter JDS Communications manuscript. Details that cannot be verified from the manuscript or prior research documentation are explicitly identified rather than reconstructed.
 
 | Section | Description |
 | --- | --- |
@@ -38,6 +34,7 @@ These pages provide the full reported research-method details, including camera 
 | [03 — Grad-CAM interpretation](Materials_and_Methods/03_gradcam_interpretation.md) | Regression Grad-CAM workflow and interpretation of activation maps |
 
 ## Windows GUI application
+<img width="1917" height="1020" alt="github" src="https://github.com/user-attachments/assets/6f8342a1-493a-4d48-a51a-3d785b569ccb" />
 
 A Windows application is available for applying the **trained detection and weight-estimation models** to cropped images, full images, or short video clips. The distributed application is intended for inference, not model training.
 
@@ -46,8 +43,5 @@ A Windows application is available for applying the **trained detection and weig
 
 The downloadable release contains the executable, required runtime files, trained model checkpoints, and a selection of example inputs. Its `data/` folder does **not** contain the complete study dataset. The release asset to download is `AMS-Leftover-Estimator-app.zip`, not GitHub's automatically generated source-code archive.
 
-## Availability and citation
-
-This repository contains **written research methods and GUI usage documentation**. Python source code, training scripts, exact data-split and timestamp manifests, and Jupyter notebooks are not provided here. Consequently, the methods explain how the reported research was carried out but the repository alone cannot reproduce model training or all published statistics. The compiled application and trained checkpoints are distributed through [GitHub Releases](../../releases/latest); complete research data and original camera recordings are not included.
-
+## Citation
 **Manuscript in preparation:** Thomas et al. *Estimation of automated milking system concentrate leftovers with 2-dimensional images and machine learning.* Please cite the published version once available. For analyses performed using the GUI, report the software release version and settings used.
