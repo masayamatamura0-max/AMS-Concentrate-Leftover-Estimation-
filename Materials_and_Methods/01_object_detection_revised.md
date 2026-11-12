@@ -32,9 +32,6 @@ The detector was trained using Detectron2's `DefaultTrainer`. Feeder-detection a
 
 The trained model was evaluated on the 20 held-out screenshots. Ground-truth binary masks were generated from the manually annotated polygons using OpenCV `fillPoly`, and predicted binary masks were obtained from Mask R-CNN. Predictions with detection confidence below **0.50** were excluded from this detector evaluation.
 
-For predicted mask *P* and ground-truth mask *G*, intersection over union (IoU) and the Dice similarity coefficient were calculated as:
-
-
 For the predicted mask $P$ and ground-truth mask $G$, intersection over union (IoU) and the Dice similarity coefficient were calculated as follows:
 
 $$
