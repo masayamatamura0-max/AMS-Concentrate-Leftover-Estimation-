@@ -40,9 +40,11 @@ The prediction model was **EfficientNet V2-S** (Tan and Le, 2021), initialized w
 
 Training targets were transformed from grams to the natural-log scale:
 
-\[
-y=\ln(1+w),\qquad w=\text{reference leftover weight in g}.
-\]
+$$
+y = \ln(1+w)
+$$
+
+where $w$ represents the reference leftover weight in grams.
 
 The network minimized **mean squared error (MSE) on the transformed target**, rather than directly minimizing error in grams. The manuscript reports the following settings:
 
@@ -57,13 +59,13 @@ The network minimized **mean squared error (MSE) on the transformed target**, ra
 | Minimum improvement in internal-validation loss | 0.0001 |
 | Saved model | Checkpoint with the lowest internal-validation loss |
 
-The model output \(\widehat{y}\) was converted back to grams by:
+The model output $\hat{y}$ was converted back to grams by:
 
-\[
-\widehat{w}=\max\{0,\exp(\widehat{y})-1\}.
-\]
+$$
+\hat{w} = \max\left(0, \exp(\hat{y}) - 1\right)
+$$
 
-Thus, a network output below zero after inverse transformation was clipped to **0 g**. This does **not** justify interpreting a failed feeder detection as zero leftover mass. The complete video clip was used to **select one crop**; the regression model predicted once from that crop, rather than averaging predictions across multiple frames.
+where $\hat{w}$ represents the predicted leftover weight in grams. Negative predictions after back-transformation were set to zero.
 
 Model development was performed in **Python 3.13.15** in **Google Colaboratory**, using an **NVIDIA Tesla T4 GPU**, according to the supplied manuscript. Its reported package versions were **PyTorch 2.11.0+cu130**, **Torchvision 0.26.0+cu130**, **Detectron2 0.6**, **scikit-learn 1.6.1**, **OpenCV 5.0.0.93**, **Pillow 11.3.0** and **NumPy 2.1.3**. These versions should be verified against the saved execution environment or lockfile before another researcher attempts to reconstruct it exactly.
 
