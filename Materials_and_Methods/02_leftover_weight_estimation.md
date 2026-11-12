@@ -67,20 +67,6 @@ Thus, a network output below zero after inverse transformation was clipped to **
 
 Model development was performed in **Python 3.13.15** in **Google Colaboratory**, using an **NVIDIA Tesla T4 GPU**, according to the supplied manuscript. Its reported package versions were **PyTorch 2.11.0+cu130**, **Torchvision 0.26.0+cu130**, **Detectron2 0.6**, **scikit-learn 1.6.1**, **OpenCV 5.0.0.93**, **Pillow 11.3.0** and **NumPy 2.1.3**. These versions should be verified against the saved execution environment or lockfile before another researcher attempts to reconstruct it exactly.
 
-## Prediction accuracy and reporting of exclusions
-
-Metrics were computed from **back-transformed predictions in grams**, not transformed targets. For observations \(i=1,\ldots,n\), with reference weight \(w_i\), prediction \(\widehat{w}_i\) and mean reference weight \(\overline{w}\):
-
-\[
-\mathrm{RMSE}=\sqrt{\frac{1}{n}\sum_{i=1}^n(w_i-\widehat{w}_i)^2},
-\qquad
-R^2=1-\frac{\sum_{i=1}^n(w_i-\widehat{w}_i)^2}{\sum_{i=1}^n(w_i-\overline{w})^2}.
-\]
-
-| Evaluation subset | n | Reported \(R^2\) | Reported RMSE (g) |
-| --- | ---: | ---: | ---: |
-| Internal validation (known weights) | 63 | 0.93 | 77.4 |
-
 ## Availability and limitations
 
 The trained `EfficientNet.pth` checkpoint is supplied with the **Windows inference GUI** described in [`gui/README.md`](../gui/README.md). The documentation archive does **not** include the source data, original video, experimental record-to-clip manifest, training script, trained-model creation history or evaluation code. Therefore, the documentation supports **methodological transparency** but **cannot on its own reproduce model training and numerical metrics**.
