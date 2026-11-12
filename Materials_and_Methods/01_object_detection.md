@@ -1,6 +1,6 @@
 # Materials and Methods — Object detection and image extraction
 
-[Repository homepage](../README.md) · [Study design](00_study_design_and_data.md) · [Leftover-weight estimation](02_leftover_weight_estimation.md)
+[Repository homepage](../README.md) · [Leftover-weight estimation](02_leftover_weight_estimation.md)
 
 ## Aim
 
