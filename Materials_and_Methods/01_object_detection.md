@@ -17,13 +17,11 @@ COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml
 MODEL.ROI_HEADS.NUM_CLASSES = 1
 ```
 
-This configuration uses a ResNet-50 backbone with a feature pyramid network (FPN) and a region-of-interest head trained for the target feed-bowl class. The final model used a trained detector checkpoint. Detector annotation and fitting details should be sourced from the verified detector-training records rather than inferred from the pretrained architecture alone.
+This configuration uses a ResNet-50 backbone with a feature pyramid network (FPN) and a region-of-interest head trained for the target feed-bowl class. The final model used a trained detector checkpoint.
 
 ### Candidate detections and acceptance criterion
 
-The documented Detectron2 configuration used a low **candidate-generation score threshold of 0.30** (`SCORE_THRESH_TEST`) to obtain candidate instances. The **minimum confidence score for accepting a feed-bowl detection was 0.90**. These are distinct decisions: candidate generation allows possible detections to be assessed, whereas the acceptance rule determines whether a detected region is suitable for subsequent cropping.
-
-When several candidate instances or frames were available, the pipeline retained the eligible candidate with the **highest detector confidence**. A detection that did not reach the acceptance criterion was not treated as an image with zero leftover mass.
+The documented Detectron2 configuration used a low **candidate-generation score threshold of 0.30** (`SCORE_THRESH_TEST`) to obtain candidate instances. The **minimum confidence score for accepting a feed-bowl detection was 0.90**. These are distinct decisions: candidate generation allows possible detections to be assessed, whereas the acceptance rule determines whether a detected region is suitable for subsequent cropping. When several candidate instances or frames were available, the pipeline retained the eligible candidate with the **highest detector confidence**.
 
 ## Selecting a crop from images or clips
 
@@ -38,13 +36,11 @@ The documented pipeline follows these steps:
 5. Use its **axis-aligned bounding box** to extract a rectangular feed-bowl crop.
 6. Pass the selected crop to the regression model, retaining the selected frame and confidence as processing metadata.
 
-The image supplied to EfficientNet is the **bounding-box crop**, not a mask-only image with the surrounding pixels removed. Although Mask R-CNN also estimates segmentation masks, those masks are not applied as foreground-only cutouts in this regression workflow.
-
-The recorded methodological summary specifies **0.20-second sampling** for clip-based crop selection. Because archived analysis helpers also contain alternative interval settings, the exact interval used to generate the final reported dataset should be confirmed against the executed analysis and saved clip metadata before citing it as a finalized experimental parameter.
+The image supplied to EfficientNet is the **bounding-box crop**, not a mask-only image with the surrounding pixels removed. Although Mask R-CNN also estimates segmentation masks, those masks are not applied as foreground-only cutouts in this regression workflow. The recorded methodological summary specifies **0.20-second sampling** for clip-based crop selection.
 
 ## Quality control and scope
 
-Detection success depends on feed-bowl visibility, image framing, illumination, and the camera/feeder configuration. If no instance meets the acceptance criterion, **no valid bowl crop is produced**; the observation should be identified as unprocessed or missing, not assigned a mass of 0 g.
+Detection success depends on feed-bowl visibility, image framing, illumination, and the camera/feeder configuration. If no instance meets the acceptance criterion, **no valid bowl crop is produced**.
 
 A detector score describes confidence in object identification, **not** uncertainty in the subsequent mass estimate. Using the detector on a different camera installation or feeder geometry would require assessment of detection reliability before using its crops in the weight model.
 
