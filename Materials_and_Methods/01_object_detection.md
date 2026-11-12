@@ -15,24 +15,20 @@ COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml
 MODEL.ROI_HEADS.NUM_CLASSES = 1
 ```
 
-### Candidate generation versus acceptance
+### Candidate Generation and Detection Acceptance
 
-The internal research records describe an internal Detectron2 test-score threshold as low as `SCORE_THRESH_TEST = 0.30` to retrieve candidates. That **candidate-generation threshold** is separate from the final criterion used to accept the best bowl crop. The reported **minimum accepted detection confidence is 0.90**.
-
-For a frame with multiple predictions, consider only candidate instances permitted by the chosen threshold, then rank by their detector confidence score. These scores reflect the detector's classification confidence and are **not calibrated uncertainty estimates for feed mass**.
+During object detection, `SCORE_THRESH_TEST = 0.30` was used to generate candidate detections. This threshold was distinct from the minimum confidence score of 0.90 required to accept a detected feed bowl for subsequent image cropping. When multiple candidate detections were identified within a frame, the detection with the highest confidence score was selected, provided that its score met the acceptance threshold of 0.90. These confidence scores represent the object detector's classification confidence rather than uncertainty estimates associated with leftover-weight prediction.
 
 ## Sampling and selection from a clip
 
-The research workflow decodes short clips using OpenCV and examines selected frames, optionally using transformed orientations in the research workflow. The general best-crop procedure is:
+The research workflow decodes short clips using OpenCV and examines selected frames. The general best-crop procedure is:
 
 1. Sample frames at the research-run frame interval.
 2. Apply the trained Mask R-CNN detector to each considered frame/orientation.
 3. Identify the candidate feed-bowl instance with the **highest confidence score** across all considered frames.
 4. Accept the crop if the selected candidate meets the minimum confidence criterion (**0.90** in the documented configuration).
-5. Use its **bounding-box coordinates** to crop the corresponding original (or considered-orientation) frame, and preserve metadata about the selected frame and score.
-
-Although Mask R-CNN predicts instance-segmentation masks, **the input for EfficientNet is a rectangular bounding-box crop**. The mask is **not** applied to remove all pixels outside the bowl. This distinction matters because visible surroundings may remain in the crop.
-
+5. Use its **bounding-box coordinates** to crop the frame, and preserve metadata about the selected frame and score.
+6. 
 ## Research processing versus current GUI
 
 The original internal research records describe more than one sampling configuration. Because the executed research files are not provided here, the exact settings used for the reported scientific evaluation need confirmation:
