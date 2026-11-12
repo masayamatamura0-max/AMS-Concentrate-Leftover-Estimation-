@@ -6,7 +6,7 @@
 
 Automated localization of the AMS feed bowl allows an image of a consistent region of interest to be passed to the concentrate leftover-weight regression model. Detection and weight estimation are separate tasks: **Mask R-CNN identifies the bowl**, whereas **EfficientNet predicts the mass of concentrate left inside the bowl**.
 
-The camera used in the documented workflow was positioned above the feeding area of the AMS. On-site video was recorded at approximately **2,560 × 1,920 pixels and 20 frames/s**. Short video clips were associated with reference observations using recorded timestamps. The time-alignment procedure used experiment records and, when relevant, recording metadata to find the corresponding on-site camera footage.
+The camera used in the documented workflow was positioned above the feeding area of the AMS. On-site video was recorded at approximately **2,560 × 1,920 pixels and 20 frames/s**. Four-second video clips were associated with reference observations using recorded timestamps. The time-alignment procedure used experiment records and, when relevant, recording metadata to find the corresponding on-site camera footage.
 
 ## Mask R-CNN detector
 
