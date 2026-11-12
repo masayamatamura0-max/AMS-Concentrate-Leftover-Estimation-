@@ -8,8 +8,6 @@ Automated localization of the AMS feed bowl allows an image of a consistent regi
 
 The camera used in the documented workflow was positioned above the feeding area of the AMS. On-site video was recorded at approximately **2,560 × 1,920 pixels and 20 frames/s**. Short video clips were associated with reference observations using recorded timestamps. The time-alignment procedure used experiment records and, when relevant, recording metadata to find the corresponding on-site camera footage.
 
-The study documentation describes nominal **4-second clips**, but source-dependent extraction windows and reuse of previously saved clips mean that actual clip durations and time alignment should be verified from the final observation manifest.
-
 ## Mask R-CNN detector
 
 A **one-class Mask R-CNN** model implemented in **Detectron2** was used to locate the feed bowl. The documented configuration was based on:
