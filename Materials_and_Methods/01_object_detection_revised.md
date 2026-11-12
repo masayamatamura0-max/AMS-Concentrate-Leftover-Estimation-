@@ -34,13 +34,19 @@ The trained model was evaluated on the 20 held-out screenshots. Ground-truth bin
 
 For predicted mask *P* and ground-truth mask *G*, intersection over union (IoU) and the Dice similarity coefficient were calculated as:
 
-\[
-\mathrm{IoU} = \frac{|P \cap G|}{|P \cup G|}
-\]
 
-\[
+For the predicted mask $P$ and ground-truth mask $G$, intersection over union (IoU) and the Dice similarity coefficient were calculated as follows:
+
+$$
+\mathrm{IoU} = \frac{|P \cap G|}{|P \cup G|}
+$$
+
+$$
 \mathrm{Dice} = \frac{2|P \cap G|}{|P| + |G|}
-\]
+$$
+
+where $P$ represents the predicted segmentation mask and $G$ represents the ground-truth segmentation mask.
+
 
 IoU and Dice were calculated for each image and averaged across the test set. Segmentation mean average precision (mAP@[0.50:0.95]) was evaluated by matching predicted and ground-truth **masks** at IoU thresholds from 0.50 to 0.95 in increments of 0.05, using a COCO-style evaluation procedure. This was a mask-level metric, not bounding-box average precision.
 
