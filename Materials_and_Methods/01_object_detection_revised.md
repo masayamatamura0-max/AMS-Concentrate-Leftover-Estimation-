@@ -70,5 +70,3 @@ The detector achieved the following results on the **20 held-out screenshots**:
 | Segmentation mAP@[0.50:0.95] | **0.91** |
 
 The total training loss decreased from approximately **1.86** at iteration 19 to **0.11** at iteration 599. Training took approximately **80 minutes**. These results indicate close agreement between detected feeder regions and manual annotations within the studied camera and feeder setup.
-
-Regression training and test performance are described in [02 — Leftover-weight estimation](02_leftover_weight_estimation.md).
